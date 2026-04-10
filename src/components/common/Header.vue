@@ -16,19 +16,19 @@ const route = useRoute()
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 480px;
+    max-width: 430px;
     height: 64px;
     display: flex;
     align-items: center;
     padding: 0 16px;
-    background: linear-gradient(135deg, #8B9FE8, #A78FD8, #C87DB8);
-    border-bottom: 1px solid #eee;
+    background: #ffffff;
+    border-bottom: 1px solid #eeeeee;
     z-index: 100;
 }
 
 .title {
     font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: black;
 }
 </style>

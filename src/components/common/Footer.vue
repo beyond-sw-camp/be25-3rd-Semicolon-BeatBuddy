@@ -18,7 +18,7 @@
         </RouterLink>
         <RouterLink to="/mypage" class="tab-item">
             <span class="mdi mdi-account"></span>
-            <span>마이페이지</span>
+            <span>마이</span>
         </RouterLink>
     </nav>
 </template>
@@ -30,13 +30,13 @@
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    max-width: 480px;
-    height: 72px;
+    max-width: 430px;
+    height: 64px;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background: linear-gradient(135deg, #8B9FE8, #A78FD8, #C87DB8);
-    border-top: 1px solid #eee;
+    background: #ffffff;
+    border-top: 1px solid #eeeeee;
     z-index: 100;
 }
 
@@ -46,15 +46,15 @@
     align-items: center;
     gap: 2px;
     text-decoration: none;
-    color: #333;
-    font-size: 12px;
+    color: #9e9e9e;
+    font-size: 11px;
 }
 
 .tab-item .mdi {
-    font-size: 26px;
+    font-size: 24px;
 }
 
 .tab-item.router-link-active {
-    color: #fff;
+    color: #6C63FF;
 }
 </style>

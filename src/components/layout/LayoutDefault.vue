@@ -9,14 +9,14 @@
 </template>
 
 <script setup>
-import Header from './Header.vue'
-import Footer from './Footer.vue'
+import Header from '../common/Header.vue'
+import Footer from '../common/Footer.vue'
 </script>
 
 <style scoped>
 .app-container {
     width: 100%;
-    max-width: 480px;
+    max-width: 430px;
     min-height: 100vh;
     min-height: 100dvh;
     margin: 0 auto;
@@ -29,7 +29,7 @@ import Footer from './Footer.vue'
 .main-content {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 72px;
+    padding-bottom: 64px;
     padding-top: 64px;
 }
 </style>

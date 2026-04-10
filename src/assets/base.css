@@ -6,7 +6,7 @@
 
 body {
     background: #e0e0e0;  /* 앱 바깥 배경색 */
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif, 'Noto Sans KR';
 }
 
 /* 텍스트 색상 */
