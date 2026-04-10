@@ -34,11 +34,35 @@ const router = createRouter({
         meta: { layout: 'default', title: '마이페이지' }
         },
         {
-        path: '/auth',
-        name: 'auth',
-        component: () => import('../views/auth/AuthView.vue'),
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/auth/LoginView.vue'),
         meta: { layout: 'auth' }
         },
+        {
+        path: '/register',
+        name: 'register',
+        component: () => import('../views/auth/RegisterView.vue'),
+        meta: { layout: 'auth' }
+        },
+        {
+        path: '/find-email',
+        name: 'findEmail',
+        component: () => import('../views/auth/FindEmailView.vue'),
+        meta: { layout: 'auth' }
+        },
+        {
+        path: '/find-password',
+        name: 'findPassword',
+        component: () => import('../views/auth/FindPasswordView.vue'),
+        meta: { layout: 'auth' }
+        },
+        {
+        path: '/onboarding',
+        name: 'onboarding',
+        component: () => import('../views/auth/OnboardingView.vue'),
+        meta: { layout: 'auth' }
+        }
     ],
 })
 
