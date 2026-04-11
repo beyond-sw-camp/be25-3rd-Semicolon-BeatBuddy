@@ -1,0 +1,109 @@
+import { defineStore } from 'pinia'
+import {
+  changePassword,
+  getMyGroupNicknames,
+  getMyNotificationSetting,
+  getMyProfile,
+  updateChatNotificationSetting,
+  updateGroupNickname,
+  updateProfileImage,
+  updateSocialNotificationSetting,
+  withdraw,
+} from '@/api/userApi'
+import { getErrorMessage, getResponseResult } from '@/api/response'
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    profile: null,
+    notificationSetting: null,
+    groupNicknames: [],
+    loading: false,
+    errorMessage: '',
+  }),
+
+  actions: {
+    setError(error) {
+      this.errorMessage = getErrorMessage(error)
+    },
+
+    async fetchMyProfile() {
+      this.loading = true
+      this.errorMessage = ''
+
+      try {
+        const response = await getMyProfile()
+        this.profile = getResponseResult(response)
+        return this.profile
+      } catch (error) {
+        this.setError(error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchMyNotificationSetting() {
+      this.loading = true
+      this.errorMessage = ''
+
+      try {
+        const response = await getMyNotificationSetting()
+        this.notificationSetting = getResponseResult(response)
+        return this.notificationSetting
+      } catch (error) {
+        this.setError(error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchMyGroupNicknames() {
+      this.loading = true
+      this.errorMessage = ''
+
+      try {
+        const response = await getMyGroupNicknames()
+        const data = getResponseResult(response)
+        this.groupNicknames = Array.isArray(data?.groups) ? data.groups : []
+        return this.groupNicknames
+      } catch (error) {
+        this.setError(error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateChatNotification(payload) {
+      await updateChatNotificationSetting(payload)
+      await this.fetchMyNotificationSetting()
+    },
+
+    async updateSocialNotification(payload) {
+      await updateSocialNotificationSetting(payload)
+      await this.fetchMyNotificationSetting()
+    },
+
+    async updateNickname(groupId, payload) {
+      await updateGroupNickname(groupId, payload)
+      await this.fetchMyGroupNicknames()
+    },
+
+    async changeMyPassword(payload) {
+      await changePassword(payload)
+    },
+
+    async updateMyProfileImage(payload) {
+      await updateProfileImage(payload)
+      await this.fetchMyProfile()
+    },
+
+    async withdrawMe() {
+      await withdraw()
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('user')
+      this.$reset()
+    },
+  },
+})

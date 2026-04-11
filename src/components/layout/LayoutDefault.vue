@@ -22,7 +22,7 @@ import Footer from '../common/Footer.vue'
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    background: #f5f5f5;
+    background: var(--color-background);
     position: relative;
 }
 

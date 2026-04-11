@@ -13,6 +13,11 @@ export default createVuetify({
     aliases,
     sets: { mdi },
   },
+  defaults: {
+    VBtn: {
+      color: 'primary',
+    },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {

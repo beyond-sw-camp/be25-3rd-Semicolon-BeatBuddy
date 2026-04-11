@@ -11,6 +11,6 @@
     min-height: 100vh;
     min-height: 100dvh;
     margin: 0 auto;
-    background: #f5f5f5;
+    background: var(--color-background);
 }
 </style>
