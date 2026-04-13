@@ -1,7 +1,13 @@
 <template>
     <div class="app-container">
-        <Header />
-        <main class="main-content">
+        <Header v-if="!hideHeader" />
+        <main 
+            class="main-content" 
+            :class="{ 
+                'no-header': hideHeader,
+                'no-footer-padding': reduceFooterPadding
+            }"
+        >
             <RouterView />
         </main>
         <Footer />
@@ -9,8 +15,15 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Header from '../common/Header.vue'
 import Footer from '../common/Footer.vue'
+
+const route = useRoute()
+
+const hideHeader = computed(() => route.path === '/music/select')
+const reduceFooterPadding = computed(() => route.path === '/music/select')
 </script>
 
 <style scoped>
@@ -31,5 +44,13 @@ import Footer from '../common/Footer.vue'
     overflow-y: auto;
     padding-bottom: 64px;
     padding-top: 64px;
+}
+
+.main-content.no-header {
+    padding-top: 0;
+}
+
+.main-content.no-footer-padding {
+    padding-bottom: 0;
 }
 </style>
