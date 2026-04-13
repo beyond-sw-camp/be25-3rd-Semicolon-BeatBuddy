@@ -12,23 +12,23 @@
       </div>
       <div
         v-for="room in chatStore.rooms"
-        :key="room.id"
+        :key="room.roomId"
         class="room-item"
-        @click="openRoom(room.id)"
+        @click="openRoom(room.roomId)"
       >
         <div class="room-avatar">
-          <img v-if="room.partnerProfileImage" :src="room.partnerProfileImage" class="avatar-img" />
+          <img v-if="room.opponentProfileImageUrl" :src="room.opponentProfileImageUrl" class="avatar-img" />
           <span v-else class="mdi mdi-account avatar-icon" />
         </div>
         <div class="room-info">
-          <p class="room-name">{{ room.partnerName }}</p>
-          <p class="room-last">{{ truncate(room.lastMessage, 24) }}</p>
+          <p class="room-name">{{ room.opponentNickname }}</p>
+          <p class="room-last">{{ truncate(room.lastMessageText || '', 24) }}</p>
         </div>
         <div class="room-meta">
           <p class="room-time">{{ formatRelative(room.lastMessageAt) }}</p>
           <v-badge
-            v-if="chatStore.unreadCounts[room.id]"
-            :content="chatStore.unreadCounts[room.id]"
+            v-if="chatStore.unreadCounts[room.roomId]"
+            :content="chatStore.unreadCounts[room.roomId]"
             color="primary"
             inline
           />
@@ -40,13 +40,13 @@
     <div v-else class="chat-room">
       <div class="chat-header">
         <v-btn icon="mdi-arrow-left" variant="text" @click="exitRoom" />
-        <span class="chat-partner">{{ currentRoom?.partnerName }}</span>
+        <span class="chat-partner">{{ currentRoom?.opponentNickname }}</span>
         <v-btn icon="mdi-exit-to-app" variant="text" color="grey" @click="confirmLeave = true" />
       </div>
       <div class="messages-wrap" ref="messagesEl">
-        <div v-for="msg in chatStore.messages" :key="msg.id" class="msg-row" :class="{ mine: msg.senderId === myId }">
+        <div v-for="msg in chatStore.messages" :key="msg.messageId" class="msg-row" :class="{ mine: msg.senderId === myId }">
           <div class="bubble" :class="{ mine: msg.senderId === myId }">
-            <p class="bubble-text">{{ msg.content }}</p>
+            <p class="bubble-text">{{ msg.messageText }}</p>
             <p class="bubble-time">{{ formatTime(msg.createdAt) }}</p>
           </div>
         </div>
@@ -90,7 +90,7 @@ import { formatTime, formatRelative, truncate } from '@/utils/format'
 
 const chatStore = useChatStore()
 const authStore = useAuthStore()
-const { sendMessage } = useWebSocket()
+const { subscribeRoom, sendMessage } = useWebSocket()
 
 const loading = ref(false)
 const inputMsg = ref('')
@@ -98,12 +98,16 @@ const confirmLeave = ref(false)
 const messagesEl = ref(null)
 
 const myId = computed(() => authStore.user?.id)
-const currentRoom = computed(() => chatStore.rooms.find((r) => r.id === chatStore.currentRoomId))
+const currentRoom = computed(() => chatStore.rooms.find((r) => r.roomId === chatStore.currentRoomId))
 
 onMounted(async () => {
   loading.value = true
   try {
     await chatStore.fetchRooms()
+    if (chatStore.currentRoomId) {
+      await chatStore.fetchMessages(chatStore.currentRoomId)
+      subscribeRoom(chatStore.currentRoomId)
+    }
   } finally {
     loading.value = false
   }
@@ -122,6 +126,7 @@ watch(
 
 async function openRoom(roomId) {
   await chatStore.fetchMessages(roomId)
+  subscribeRoom(roomId)
   await nextTick()
   if (messagesEl.value) {
     messagesEl.value.scrollTop = messagesEl.value.scrollHeight

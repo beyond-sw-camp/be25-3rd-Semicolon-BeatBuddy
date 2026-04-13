@@ -18,7 +18,7 @@
       <div class="menu-list">
         <div class="menu-item" @click="showEditProfile = true">
           <span class="mdi mdi-account-edit menu-icon" />
-          <span>프로필 수정</span>
+          <span>프로필 이미지 수정</span>
           <span class="mdi mdi-chevron-right ml-auto" />
         </div>
         <div class="menu-item" @click="showChangePwd = true">
@@ -40,11 +40,11 @@
     <!-- 프로필 수정 다이얼로그 -->
     <v-dialog v-model="showEditProfile" max-width="360">
       <v-card rounded="xl" class="pa-2">
-        <v-card-title style="font-size:17px;font-weight:700;padding:16px 16px 0">프로필 수정</v-card-title>
+        <v-card-title style="font-size:17px;font-weight:700;padding:16px 16px 0">프로필 이미지 수정</v-card-title>
         <v-card-text>
           <v-text-field
-            v-model="editName"
-            label="닉네임"
+            v-model="editProfileImageUrl"
+            label="프로필 이미지 URL"
             variant="outlined"
             prepend-inner-icon="mdi-account-outline"
             color="primary"
@@ -139,7 +139,7 @@ const loading = ref(false)
 
 // 프로필 수정
 const showEditProfile = ref(false)
-const editName = ref('')
+const editProfileImageUrl = ref('')
 const editLoading = ref(false)
 const editError = ref('')
 
@@ -163,15 +163,15 @@ onMounted(async () => {
       loading.value = false
     }
   }
-  editName.value = authStore.user?.name || ''
+  editProfileImageUrl.value = authStore.user?.profileImage || ''
 })
 
 async function saveProfile() {
   editError.value = ''
   editLoading.value = true
   try {
-    await userApi.updateMe({ name: editName.value })
-    authStore.user.name = editName.value
+    await userApi.updateProfileImage(editProfileImageUrl.value)
+    authStore.user.profileImage = editProfileImageUrl.value
     showEditProfile.value = false
   } catch (e) {
     editError.value = e.response?.data?.message || '수정에 실패했습니다.'
@@ -191,6 +191,7 @@ async function changePassword() {
     await userApi.changePassword({
       currentPassword: pwdForm.value.current,
       newPassword: pwdForm.value.newPwd,
+      newPasswordConfirm: pwdForm.value.confirm,
     })
     showChangePwd.value = false
     pwdForm.value = { current: '', newPwd: '', confirm: '' }

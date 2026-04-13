@@ -43,7 +43,7 @@
         >수정</v-btn>
       </div>
       <div class="song-list" v-if="musicStore.favoriteSongs.length">
-        <div v-for="(song, i) in musicStore.favoriteSongs" :key="song.id" class="song-row">
+        <div v-for="(song, i) in musicStore.favoriteSongs" :key="song.trackId" class="song-row">
           <span class="song-rank">{{ i + 1 }}</span>
           <img v-if="song.albumCover" :src="song.albumCover" class="song-cover" />
           <div class="song-info">
@@ -84,7 +84,7 @@
           <div v-if="musicStore.searchResults.length" class="search-list">
             <div
               v-for="song in musicStore.searchResults"
-              :key="song.id"
+              :key="song.trackId"
               class="song-search-item"
               :class="{ selected: isSelected(song) }"
               @click="toggleSong(song)"
@@ -100,7 +100,7 @@
           <!-- 선택된 곡 -->
           <div v-if="editSelected.length" class="selected-section">
             <p class="selected-label">선택된 곡 ({{ editSelected.length }}/10)</p>
-            <div v-for="(song, i) in editSelected" :key="song.id" class="selected-item">
+            <div v-for="(song, i) in editSelected" :key="song.trackId" class="selected-item">
               <span class="song-rank">{{ i + 1 }}</span>
               <img v-if="song.albumCover" :src="song.albumCover" class="song-cover" />
               <div class="song-info flex-1">{{ song.title }}</div>
@@ -149,7 +149,7 @@ async function searchSongs() {
 }
 
 function isSelected(song) {
-  return editSelected.value.some((s) => s.id === song.id)
+  return editSelected.value.some((s) => s.trackId === song.trackId)
 }
 
 function toggleSong(song) {
@@ -161,13 +161,13 @@ function toggleSong(song) {
 }
 
 function removeSong(song) {
-  editSelected.value = editSelected.value.filter((s) => s.id !== song.id)
+  editSelected.value = editSelected.value.filter((s) => s.trackId !== song.trackId)
 }
 
 async function saveFavorites() {
   saving.value = true
   try {
-    await musicStore.saveFavorites(editSelected.value.map((s) => s.id))
+    await musicStore.saveFavorites(editSelected.value)
     showEditDialog.value = false
     musicStore.clearSearch()
     editSelected.value = []

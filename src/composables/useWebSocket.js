@@ -6,6 +6,7 @@ import { useFriendStore } from '@/stores/friend'
 
 const client = ref(null)
 const isConnected = ref(false)
+const roomSubscriptions = new Map()
 
 export function useWebSocket() {
     const authStore = useAuthStore()
@@ -16,7 +17,7 @@ export function useWebSocket() {
         if (isConnected.value || !authStore.isLoggedIn) return
 
         client.value = new Client({
-            brokerURL: 'ws://localhost:8088/ws',
+            brokerURL: 'ws://localhost:8088/ws/chat/websocket',
             connectHeaders: {
                 Authorization: `Bearer ${authStore.accessToken}`,
             },
@@ -24,17 +25,13 @@ export function useWebSocket() {
             onConnect: () => {
                 isConnected.value = true
 
-                // 채팅 메시지 구독 (로그인한 유저의 메시지)
-                client.value.subscribe(`/user/queue/chat`, (message) => {
-                    const body = JSON.parse(message.body)
-                    chatStore.addMessage(body)
-                })
-
-                // 알림 구독 (친구 신청, 수락 등)
-                client.value.subscribe(`/user/queue/notifications`, (message) => {
-                    const body = JSON.parse(message.body)
-                    friendStore.addNotification(body)
-                })
+                const userId = authStore.user?.id
+                if (userId) {
+                    client.value.subscribe(`/sub/events/${userId}`, () => {
+                        chatStore.fetchRooms()
+                        friendStore.fetchNotifications()
+                    })
+                }
             },
             onDisconnect: () => {
                 isConnected.value = false
@@ -49,20 +46,32 @@ export function useWebSocket() {
 
     function disconnect() {
         if (client.value) {
+            roomSubscriptions.forEach((subscription) => subscription.unsubscribe())
+            roomSubscriptions.clear()
             client.value.deactivate()
             client.value = null
             isConnected.value = false
         }
     }
 
+    function subscribeRoom(roomId) {
+        if (!isConnected.value || !client.value || roomSubscriptions.has(roomId)) return
+
+        const subscription = client.value.subscribe(`/sub/chat/rooms/${roomId}`, (message) => {
+            const body = JSON.parse(message.body)
+            chatStore.addMessage(body)
+        })
+        roomSubscriptions.set(roomId, subscription)
+    }
+
     // 채팅 메시지 전송
     function sendMessage(roomId, content) {
         if (!isConnected.value || !client.value) return
         client.value.publish({
-            destination: `/app/chat/${roomId}`,
-            body: JSON.stringify({ content }),
+            destination: '/pub/chat/message',
+            body: JSON.stringify({ roomId, messageText: content }),
         })
     }
 
-    return { isConnected, connect, disconnect, sendMessage }
+    return { isConnected, connect, disconnect, subscribeRoom, sendMessage }
 }

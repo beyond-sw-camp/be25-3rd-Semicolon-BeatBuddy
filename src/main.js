@@ -25,14 +25,19 @@ const vuetify = createVuetify({
         },
     },
     theme: {
+        defaultTheme: 'light',
         themes: {
             light: {
                 colors: {
                     primary: '#6C63FF',
-                }
-            }
-        }
-    }
+                    secondary: '#9E97FF',
+                    background: '#FFFFFF',
+                    surface: '#F5F5F5',
+                    error: '#FF5252',
+                },
+            },
+        },
+    },
 })
 
 const app = createApp(App)

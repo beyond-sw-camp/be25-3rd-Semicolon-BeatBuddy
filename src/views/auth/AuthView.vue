@@ -50,7 +50,7 @@
     <!-- 비밀번호 찾기 -->
     <div v-else-if="activeTab === 'forgot'" class="form-section">
       <h2 class="form-title">🔑 비밀번호 찾기</h2>
-      <p class="form-desc">가입한 이메일로 임시 비밀번호를 보내드립니다.</p>
+      <p class="form-desc">가입한 이메일로 인증코드를 보내드립니다.</p>
       <v-text-field
         v-model="forgotEmail"
         label="이메일"
@@ -60,7 +60,7 @@
         color="primary"
         class="mb-3"
       />
-      <v-btn block color="primary" :loading="loading" @click="handleForgot">임시 비밀번호 발송</v-btn>
+      <v-btn block color="primary" :loading="loading" @click="handleForgot">인증코드 발송</v-btn>
       <p class="back-link" @click="activeTab = 'login'">← 로그인으로 돌아가기</p>
       <v-alert v-if="forgotSuccess" type="success" class="mt-3">이메일을 확인해 주세요!</v-alert>
       <p class="error-msg" v-if="errorMsg">{{ errorMsg }}</p>
@@ -134,7 +134,35 @@
           variant="outlined"
           prepend-inner-icon="mdi-lock-outline"
           color="primary"
+          class="mb-2"
+        />
+        <!-- 성별 선택 -->
+        <div class="gender-row mb-2">
+          <span class="gender-label">성별</span>
+          <div class="gender-btns">
+            <button
+              :class="['gender-btn', { active: registerForm.gender === 'MALE' }]"
+              @click="registerForm.gender = 'MALE'"
+              type="button"
+            >남성</button>
+            <button
+              :class="['gender-btn', { active: registerForm.gender === 'FEMALE' }]"
+              @click="registerForm.gender = 'FEMALE'"
+              type="button"
+            >여성</button>
+          </div>
+        </div>
+        <!-- 출생연도 -->
+        <v-text-field
+          v-model.number="registerForm.birthYear"
+          label="출생연도 (예: 1995)"
+          type="number"
+          variant="outlined"
+          prepend-inner-icon="mdi-cake-variant-outline"
+          color="primary"
           class="mb-3"
+          :min="1900"
+          :max="2010"
         />
         <p class="error-msg" v-if="errorMsg">{{ errorMsg }}</p>
         <v-btn block color="primary" :disabled="!emailVerified" @click="goStep2">다음</v-btn>
@@ -242,7 +270,7 @@ async function handleLogin() {
   try {
     await authStore.login(loginForm.value)
   } catch (e) {
-    errorMsg.value = e.response?.data?.message || '로그인에 실패했습니다.'
+    errorMsg.value = e.message || e.response?.data?.message || e.response?.data?.result?.message || '로그인에 실패했습니다.'
   } finally {
     loading.value = false
   }
@@ -255,7 +283,7 @@ async function handleForgot() {
   errorMsg.value = ''
   loading.value = true
   try {
-    await authApi.forgotPassword(forgotEmail.value)
+    await authApi.sendPasswordResetCode(forgotEmail.value)
     forgotSuccess.value = true
   } catch (e) {
     errorMsg.value = e.response?.data?.message || '이메일 발송에 실패했습니다.'
@@ -266,7 +294,8 @@ async function handleForgot() {
 
 // 회원가입
 const registerForm = ref({
-  name: '', email: '', code: '', password: '', passwordConfirm: '', groupCode: ''
+  name: '', email: '', code: '', password: '', passwordConfirm: '', groupCode: '',
+  gender: 'MALE', birthYear: null
 })
 const codeSent = ref(false)
 const sendingCode = ref(false)
@@ -337,15 +366,17 @@ async function handleRegister() {
   loading.value = true
   try {
     const payload = {
-      name: registerForm.value.name,
+      nickname: registerForm.value.name,
       email: registerForm.value.email,
       password: registerForm.value.password,
+      gender: registerForm.value.gender,
+      birthYear: registerForm.value.birthYear,
       groupCode: registerForm.value.groupCode || null,
-      songIds: selectedSongs.value.map((s) => s.id),
     }
     await authApi.register(payload)
     // 회원가입 후 자동 로그인
     await authStore.login({ email: payload.email, password: payload.password })
+    await musicStore.saveFavorites(selectedSongs.value)
   } catch (e) {
     errorMsg.value = e.response?.data?.message || '회원가입에 실패했습니다.'
   } finally {
@@ -385,6 +416,43 @@ async function handleRegister() {
 
 .tab-btn.active {
   background: #6C63FF;
+  color: #fff;
+}
+
+.gender-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gender-label {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.gender-btns {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.gender-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: #888;
+  transition: all 0.2s;
+}
+
+.gender-btn.active {
+  background: #6C63FF;
+  border-color: #6C63FF;
   color: #fff;
 }
 

@@ -7,11 +7,40 @@ export const useMusicStore = defineStore('music', () => {
     const tasteVector = ref([])
     const searchResults = ref([])
     const isSearching = ref(false)
+    const isTasteAnalyzed = ref(false)
+
+    function normalizeTrack(track) {
+        return {
+            id: track.trackId,
+            trackId: track.trackId,
+            title: track.trackName,
+            trackName: track.trackName,
+            artist: track.artistName,
+            artistName: track.artistName,
+            albumId: track.albumId,
+            albumName: track.albumName,
+            albumCover: track.coverUrl ?? track.albumCoverUrl,
+            coverUrl: track.coverUrl ?? track.albumCoverUrl,
+        }
+    }
+
+    function toTasteTrack(song) {
+        return {
+            trackId: song.trackId ?? song.id,
+            trackName: song.trackName ?? song.title,
+            artistName: song.artistName ?? song.artist,
+            albumId: song.albumId,
+            albumName: song.albumName,
+            coverUrl: song.coverUrl ?? song.albumCover,
+        }
+    }
 
     async function fetchMyProfile() {
-        const res = await musicApi.getMyProfile()
-        favoriteSongs.value = res.data.favoriteSongs || []
-        tasteVector.value = res.data.tasteVector || []
+        const res = await musicApi.getMyTaste()
+        const result = res.data?.result ?? {}
+        favoriteSongs.value = (result.tracks || []).map(normalizeTrack)
+        isTasteAnalyzed.value = !!result.isTasteAnalyzed
+        tasteVector.value = []
     }
 
     async function searchSongs(query) {
@@ -22,14 +51,16 @@ export const useMusicStore = defineStore('music', () => {
         isSearching.value = true
         try {
             const res = await musicApi.search(query)
-            searchResults.value = res.data || []
+            searchResults.value = (res.data?.result || []).map(normalizeTrack)
         } finally {
             isSearching.value = false
         }
     }
 
-    async function saveFavorites(songIds) {
-        await musicApi.saveFavorites(songIds)
+    async function saveFavorites(songs) {
+        const tracks = songs.map(toTasteTrack)
+        const request = favoriteSongs.value.length ? musicApi.updateTaste : musicApi.saveTaste
+        await request(tracks)
         await fetchMyProfile()
     }
 
@@ -37,5 +68,5 @@ export const useMusicStore = defineStore('music', () => {
         searchResults.value = []
     }
 
-    return { favoriteSongs, tasteVector, searchResults, isSearching, fetchMyProfile, searchSongs, saveFavorites, clearSearch }
+    return { favoriteSongs, tasteVector, searchResults, isSearching, isTasteAnalyzed, fetchMyProfile, searchSongs, saveFavorites, clearSearch }
 })

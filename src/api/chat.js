@@ -2,11 +2,14 @@ import api from './axios'
 
 export const chatApi = {
     // 채팅방 목록 조회
-    getRooms: () => api.get('/chat/rooms'),
+    getRooms: () => api.get('/v1/chat/rooms'),
 
-    // 채팅방 메시지 조회 (페이지네이션)
-    getMessages: (roomId, params) => api.get(`/chat/rooms/${roomId}/messages`, { params }),
+    // 채팅방 생성/조회
+    createRoom: (opponentUserId) => api.post('/v1/chat/rooms', { opponentUserId }),
+
+    // 채팅방 입장 및 메시지 조회
+    getMessages: (roomId) => api.get(`/v1/chat/${roomId}/messages`),
 
     // 채팅방 나가기
-    leaveRoom: (roomId) => api.delete(`/chat/rooms/${roomId}/members/me`),
+    leaveRoom: (roomId) => api.patch(`/v1/chat/${roomId}/exit`),
 }

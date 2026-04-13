@@ -21,7 +21,18 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8088',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/images': {
+        target: 'http://localhost:8088',
+        changeOrigin: true,
+      },
+      '/default-profile.jpg': {
+        target: 'http://localhost:8088',
+        changeOrigin: true,
+      },
+      '/default-group.jpg': {
+        target: 'http://localhost:8088',
+        changeOrigin: true,
       },
     },
   },
