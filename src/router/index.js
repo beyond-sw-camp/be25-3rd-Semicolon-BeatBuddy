@@ -28,6 +28,12 @@ const router = createRouter({
         meta: { layout: 'default', title: '음악' }
         },
         {
+        path: '/music/select',
+        name: 'musicSelect',
+        component: () => import('../views/music/MusicSelectView.vue'),
+        meta: { layout: 'default' }
+        },
+        {
         path: '/mypage',
         name: 'mypage',
         component: () => import('../views/mypage/MypageView.vue'),
