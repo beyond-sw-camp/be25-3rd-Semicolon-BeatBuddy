@@ -86,17 +86,38 @@ export const useUserStore = defineStore('user', {
     },
 
     async updateNickname(groupId, payload) {
-      await updateGroupNickname(groupId, payload)
-      await this.fetchMyGroupNicknames()
+      this.errorMessage = ''
+
+      try {
+        await updateGroupNickname(groupId, payload)
+        await this.fetchMyGroupNicknames()
+      } catch (error) {
+        this.setError(error)
+        throw error
+      }
     },
 
     async changeMyPassword(payload) {
-      await changePassword(payload)
+      this.errorMessage = ''
+
+      try {
+        await changePassword(payload)
+      } catch (error) {
+        this.setError(error)
+        throw error
+      }
     },
 
     async updateMyProfileImage(payload) {
-      await updateProfileImage(payload)
-      await this.fetchMyProfile()
+      this.errorMessage = ''
+
+      try {
+        await updateProfileImage(payload)
+        await this.fetchMyProfile()
+      } catch (error) {
+        this.setError(error)
+        throw error
+      }
     },
 
     async withdrawMe() {
