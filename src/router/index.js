@@ -34,6 +34,12 @@ const router = createRouter({
         meta: { layout: 'default' }
         },
         {
+        path: '/music/search',
+        name: 'musicSearch',
+        component: () => import('../views/music/MusicSearchView.vue'),
+        meta: { layout: 'default' }
+        },
+        {
         path: '/mypage',
         name: 'mypage',
         component: () => import('../views/mypage/MypageView.vue'),

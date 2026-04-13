@@ -16,7 +16,7 @@
             size="large"
             class="select-button"
             rounded="xl"
-            @click="goToSelectPage"
+            @click="goToSelect"
         >
             음악 선택하기
         </v-btn>

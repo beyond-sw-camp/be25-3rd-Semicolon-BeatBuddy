@@ -22,8 +22,12 @@ import Footer from '../common/Footer.vue'
 
 const route = useRoute()
 
-const hideHeader = computed(() => route.path === '/music/select')
-const reduceFooterPadding = computed(() => route.path === '/music/select')
+const isMusicFullScreenPage = computed (() =>
+    ['/music/select', '/music/search'].includes(route.path)
+)
+
+const hideHeader = computed(() => isMusicFullScreenPage.value)
+const reduceFooterPadding = computed(() => isMusicFullScreenPage.value)
 </script>
 
 <style scoped>

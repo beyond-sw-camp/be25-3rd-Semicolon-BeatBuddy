@@ -21,6 +21,7 @@
                 size="large"
                 rounded="xl"
                 class="add-button"
+                @click="goToSearch"
             >
                 + 곡 추가하기
             </v-btn>
@@ -45,6 +46,10 @@ const selectedCount = ref(0)
 
 const goBack = () => {
     router.push('/music')
+}
+
+const goToSearch = () => {
+    router.push('/music/search')
 }
 </script>
 
