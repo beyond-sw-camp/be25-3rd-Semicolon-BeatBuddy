@@ -13,9 +13,10 @@
                             class="save-button" 
                             color="primary" 
                             rounded="lg" 
-                            :disabled="!musicStore.isComplete"
+                            :disabled="!musicStore.isComplete || saving"
+                            @click="handleSave"
                         >
-                            저장
+                            {{ saving ? '저장 중...' : '저장' }}
                         </v-btn>
                     </div>
                 </div>
@@ -92,11 +93,16 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMusicStore } from '@/stores/music';
+import { saveTaste } from '@/api/music';
 
 const router = useRouter()
 const musicStore = useMusicStore()
+
+// 저장 중 상태
+const saving = ref(false)
 
 const goBack = () => {
     router.push('/music')
@@ -110,6 +116,38 @@ const goToSearch = () => {
 // 선택된 곡 삭제
 const removeTrack = (trackId) => {
     musicStore.removeTrack(trackId)
+}
+
+// 저장 버튼 클릭
+const handleSave = async () => {
+    if (!musicStore.isComplete) return
+
+    saving.value = true
+
+    try {
+        const payload = {
+            tracks: musicStore.selectedTracks.map(track => ({
+                trackId: track.trackId,
+                trackName: track.trackName,
+                artistName: track.artistName,
+                albumId: track.albumId,
+                albumName: track.albumName,
+                coverUrl: track.coverUrl,
+            }))
+        }
+
+        const result = await saveTaste(payload)
+        console.log('저장 성공:', result)
+
+        // 저장 성공 후 음악 메인 화면으로 이동
+        router.push('/music')
+
+    } catch (error) {
+        console.error('취향 저장 실패:', error)
+        alert('취향 저장에 실패했습니다.')
+    } finally {
+        saving.value = false
+    }
 }
 </script>
 

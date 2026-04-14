@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
     baseURL: 'http://localhost:8088',
-    timeout: 5000
+    timeout: 30000
 })
 
 // 요청 보낼 때 토큰 자동 추가

@@ -7,3 +7,9 @@ export const searchTracks = async (keyword) => {
     })
     return response.data
 }
+
+// 취향 곡 저장
+export const saveTaste = async (payload) => {
+    const response = await api.post('/api/v1/music/taste', payload)
+    return response.data
+}
