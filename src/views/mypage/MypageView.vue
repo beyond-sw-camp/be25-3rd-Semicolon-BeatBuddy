@@ -55,13 +55,12 @@
       <v-card class="section-card" elevation="0">
         <v-card-title>프로필 이미지 변경</v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="profileImageUrl"
-            label="이미지 URL"
-            variant="outlined"
-            density="comfortable"
-            hide-details="auto"
-            autofocus
+          <input
+            ref="profileImageInput"
+            class="hidden-file-input"
+            type="file"
+            accept="image/*"
+            @change="handleProfileImageSelected"
           />
           <div v-if="profileImagePreview" class="image-preview">
             <v-img
@@ -71,6 +70,14 @@
               cover
             />
           </div>
+          <v-btn
+            variant="outlined"
+            color="primary"
+            block
+            @click="openProfileImagePicker"
+          >
+            사진 선택
+          </v-btn>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -414,7 +421,9 @@ const router = useRouter()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 
+const profileImageInput = ref(null)
 const profileImageUrl = ref('')
+const profileImageFile = ref(null)
 const allowPushChat = ref(false)
 const allowPushSocial = ref(false)
 const groupNicknameInputs = reactive({})
@@ -450,7 +459,11 @@ const profileImage = computed(() => {
   return profile.value.profileImageUrl || profile.value.profileImage || profile.value.imageUrl || ''
 })
 const resolvedProfileImage = computed(() => resolveImageUrl(profileImage.value))
-const profileImagePreview = computed(() => resolveImageUrl(profileImageUrl.value))
+const profileImagePreview = computed(() => {
+  return profileImageUrl.value
+    ? resolveImageUrl(profileImageUrl.value)
+    : resolveImageUrl(profileImage.value)
+})
 const canWithdraw = computed(() => withdrawConfirmText.value === '회원탈퇴')
 const withdrawConfirmLabel = computed(() => {
   return withdrawConfirmFocused.value || withdrawConfirmText.value
@@ -472,8 +485,39 @@ const resolveImageUrl = (url) => {
 }
 
 watch(profileImage, (value) => {
-  profileImageUrl.value = value
+  if (!profileImageDialog.value) {
+    profileImageUrl.value = value
+  }
 })
+
+const openProfileImagePicker = () => {
+  if (profileImageInput.value) {
+    profileImageInput.value.value = ''
+    profileImageInput.value.click()
+  }
+}
+
+const handleProfileImageSelected = (event) => {
+  const selectedFile = event.target.files?.[0] || null
+  profileImageFile.value = selectedFile
+
+  if (selectedFile) {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      profileImageUrl.value = reader.result
+    }
+
+    reader.onerror = () => {
+      profileImageUrl.value = ''
+      userStore.errorMessage = '이미지 파일을 읽지 못했습니다.'
+    }
+
+    reader.readAsDataURL(selectedFile)
+  } else {
+    profileImageUrl.value = ''
+  }
+}
 
 watch(notificationSetting, (value) => {
   allowPushChat.value = Boolean(value.allowPushChat)
@@ -502,12 +546,18 @@ const loadMypage = async () => {
 
 const openProfileImageDialog = () => {
   profileImageUrl.value = profileImage.value
+  profileImageFile.value = null
   profileImageDialog.value = true
   successMessage.value = ''
   userStore.errorMessage = ''
 }
 
 const handleUpdateProfileImage = async () => {
+  if (!profileImageUrl.value.trim()) {
+    userStore.errorMessage = '프로필 이미지를 먼저 선택해 주세요.'
+    return
+  }
+
   savingProfileImage.value = true
   successMessage.value = ''
   userStore.errorMessage = ''
@@ -516,6 +566,8 @@ const handleUpdateProfileImage = async () => {
     await userStore.updateMyProfileImage({
       profileImageUrl: profileImageUrl.value.trim(),
     })
+    profileImageFile.value = null
+    profileImageUrl.value = ''
     profileImageDialog.value = false
     successMessage.value = '프로필 이미지가 변경되었습니다.'
   } catch {
@@ -777,11 +829,15 @@ onMounted(loadMypage)
 .image-preview {
   width: 120px;
   height: 120px;
-  margin-top: 12px;
+  margin: 12px 0;
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: 16px;
   background: #ffffff;
+}
+
+.hidden-file-input {
+  display: none;
 }
 
 .notification-list {
