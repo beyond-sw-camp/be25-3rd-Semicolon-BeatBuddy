@@ -47,12 +47,6 @@ const router = createRouter({
         meta: { layout: 'auth' }
         },
         {
-        path: '/find-email',
-        name: 'findEmail',
-        component: () => import('../views/auth/FindEmailView.vue'),
-        meta: { layout: 'auth' }
-        },
-        {
         path: '/find-password',
         name: 'findPassword',
         component: () => import('../views/auth/FindPasswordView.vue'),
@@ -74,7 +68,7 @@ router.beforeEach((to, from, next) => {
 
     const authStore = useAuthStore()
     // 로그인 없이 접근 가능한 페이지 목록
-    const publicPages = ['/login', '/register', '/find-email', '/find-password', '/onboarding']
+    const publicPages = ['/login', '/register', '/find-password', '/onboarding']
     // 지금 가려는 페이지가 그 목록에 있는지 확인
     const isPublic = publicPages.includes(to.path)
 

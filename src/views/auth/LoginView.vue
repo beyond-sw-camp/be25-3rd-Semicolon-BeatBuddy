@@ -67,13 +67,14 @@
       </v-btn>
 
       <div class="links">
-        <RouterLink to="/find-email">아이디 찾기</RouterLink>
+        <span @click="showFindEmail = true">아이디 찾기</span>
         <span class="divider">|</span>
         <RouterLink to="/find-password">비밀번호 찾기</RouterLink>
         <span class="divider">|</span>
         <RouterLink to="/register">회원가입 하기</RouterLink>
       </div>
     </div>
+    <FindEmailModal v-model="showFindEmail" />
   </div>
 </template>
 
@@ -82,6 +83,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { login } from "@/api/auth";
+import FindEmailModal from '@/views/auth/FindEmailModal.vue'
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -92,6 +94,7 @@ const showPassword = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref("");
 const formRef = ref(null)
+const showFindEmail = ref(false)
 
 const emailRules = [
   v => !!v || '이메일을 입력해주세요.',
@@ -227,6 +230,12 @@ async function handleLogin() {
   font-size: 13px;
   color: #757575;
   text-decoration: none;
+}
+
+.links span {
+  font-size: 13px;
+  color: #757575;
+  cursor: pointer;
 }
 
 .divider {
