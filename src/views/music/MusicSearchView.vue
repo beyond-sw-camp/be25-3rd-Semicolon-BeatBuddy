@@ -1,78 +1,82 @@
 <template>
     <div class="music-search-view">
-        <div class="top-bar">
-            <button class="back-button" @click="goBack">←</button>
-            <h1 class="page-title">곡 검색</h1>
-        </div>
-
-        <div class="search-box">
-            <v-icon class="search-icon">mdi-magnify</v-icon>
-            <input 
-                v-model="keyword"
-                type="text" 
-                placeholder="곡, 아티스트, 앨범 검색"
-                class="search-input"
-                @keyup.enter="handleSearch"
-            />
-        </div>
-
-        <div class="divider"></div>
-
-        <div v-if="loading" class="state-section">
-            <p class="state-text">검색 중입니다...</p>
-        </div>
-
-        <div v-else-if="errorMessage" class="state-section">
-            <p class="state-text">{{ errorMessage }}</p>
-        </div>
-
-        <div v-else-if="searched && tracks.length === 0" class="state-section">
-            <div class="empty-icon">♫</div>
-            <p class="empty-text">
-                검색 결과가 없습니다.<br />
-                다른 검색어를 입력해보세요.
-            </p>
-        </div>
-
-        <div v-else-if="tracks.length > 0" class="result-list">
-            <div 
-                v-for="track in tracks"
-                :key="track.trackId"
-                class="track-card"
-            >
-                <img
-                    v-if="track.coverUrl"
-                    :src="track.coverUrl"
-                    alt="앨범 커버"
-                    class="album-image"
-                />
-
-                <div v-else class="album-placeholder">♫</div>
-
-                <div class="track-info">
-                    <p class="track-name">{{ track.trackName }}</p>
-                    <p class="artist-name">{{ track.artistName }}</p>
-                    <p class="album-name">{{ track.albumName }}</p>
-                </div>
-
-                <v-btn
-                    color="primary"
-                    variant="tonal"
-                    rounded="lg"
-                    class="select-button"
-                    @click="selectTrack(track)"
-                >
-                    선택
-                </v-btn>
+        <div class="top-fixed">
+            <div class="top-bar">
+                <button class="back-button" @click="goBack">←</button>
+                <h1 class="page-title">곡 검색</h1>
             </div>
+
+            <div class="search-box">
+                <v-icon class="search-icon">mdi-magnify</v-icon>
+                <input 
+                    v-model="keyword"
+                    type="text" 
+                    placeholder="곡, 아티스트, 앨범 검색"
+                    class="search-input"
+                    @keyup.enter="handleSearch"
+                />
+            </div>
+
+            <div class="divider"></div>
         </div>
 
-        <div v-else class="empty-section">
-            <div class="empty-icon">♫</div>
-            <p class="empty-text">
-                검색어를 입력하여<br />
-                음악을 찾아보세요.
-            </p>
+        <div class="content-section">
+            <div v-if="loading" class="state-section">
+                <p class="state-text">검색 중입니다...</p>
+            </div>
+
+            <div v-else-if="errorMessage" class="state-section">
+                <p class="state-text">{{ errorMessage }}</p>
+            </div>
+
+            <div v-else-if="searched && tracks.length === 0" class="state-section">
+                <div class="empty-icon">♫</div>
+                <p class="empty-text">
+                    검색 결과가 없습니다.<br />
+                    다른 검색어를 입력해보세요.
+                </p>
+            </div>
+
+            <div v-else-if="tracks.length > 0" class="result-list">
+                <div 
+                    v-for="track in tracks"
+                    :key="track.trackId"
+                    class="track-card"
+                >
+                    <img
+                        v-if="track.coverUrl"
+                        :src="track.coverUrl"
+                        alt="앨범 커버"
+                        class="album-image"
+                    />
+
+                    <div v-else class="album-placeholder">♫</div>
+
+                    <div class="track-info">
+                        <p class="track-name">{{ track.trackName }}</p>
+                        <p class="artist-name">{{ track.artistName }}</p>
+                        <p class="album-name">{{ track.albumName }}</p>
+                    </div>
+
+                    <v-btn
+                        color="primary"
+                        variant="tonal"
+                        rounded="lg"
+                        class="select-button"
+                        @click="selectTrack(track)"
+                    >
+                        선택
+                    </v-btn>
+                </div>
+            </div>
+
+            <div v-else class="empty-section">
+                <div class="empty-icon">♫</div>
+                <p class="empty-text">
+                    검색어를 입력하여<br />
+                    음악을 찾아보세요.
+                </p>
+            </div>
         </div>
     </div>
 </template>
@@ -130,10 +134,16 @@ const selectTrack = (track) => {
 
 <style scoped>
 .music-search-view {
-    min-height: calc(100dvh - 64px);
+    height: calc(100dvh - 64px);
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+.top-fixed {
+    flex-shrink: 0;
+    background-color: #ffffff;
 }
 
 .top-bar {
@@ -205,6 +215,14 @@ const selectTrack = (track) => {
     border-bottom: 1px solid #e5e7eb;
 }
 
+.content-section {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 .state-section,
 .empty-section {
     flex: 1;
@@ -230,6 +248,9 @@ const selectTrack = (track) => {
 }
 
 .result-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     padding: 20px 24px 24px;
     display: flex;
     flex-direction: column;
