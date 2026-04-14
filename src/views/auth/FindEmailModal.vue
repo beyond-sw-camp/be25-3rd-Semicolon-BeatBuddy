@@ -19,7 +19,8 @@
           />
           <div class="btn-group">
             <v-btn variant="outlined" rounded="lg" @click="handleClose">취소</v-btn>
-            <v-btn color="primary" rounded="lg" :loading="isLoading" @click="handleCheck">확인</v-btn>
+            <v-btn color="primary" rounded="lg" :loading="isLoading" @click="handleCheck"
+            :disabled="!/.+@.+\..+/.test(email)" >확인</v-btn>
           </div>
         </template>
 
@@ -147,8 +148,13 @@ async function handleCheck() {
   padding-left: 10px !important;
 }
 
-:deep(.v-field--error .v-field__outline) {
+:deep(.v-messages__message) {
   color: #FF5252 !important;
 }
 
+:deep(.v-field--error .v-field__outline__start),
+:deep(.v-field--error .v-field__outline__notch),
+:deep(.v-field--error .v-field__outline__end) {
+  border-color: #FF5252 !important;
+}
 </style>
