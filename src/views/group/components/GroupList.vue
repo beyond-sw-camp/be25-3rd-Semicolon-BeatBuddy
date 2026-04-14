@@ -16,21 +16,24 @@
             rounded="lg"
             border
             flat
+            style="display: flex; overflow: hidden;"
         >
             <div class="group-item">
-                <v-img
-                    v-if="group.groupImageUrl"
-                    :src="`http://localhost:8088${group.groupImageUrl}`"
-                    cover
-                    class="group-img"
-                />
-                <v-icon v-else icon="mdi-account-group" color="primary" size="32" class="mx-3" />
+                <div class="group-img-wrapper">
+                    <v-img
+                        v-if="group.groupImageUrl"
+                        :src="`http://localhost:8088${group.groupImageUrl}`"
+                        cover
+                    />
+                    <v-icon v-else icon="mdi-account-group" color="primary" size="32" class="mx-3" />
+                </div>
                 <div class="group-info">
                     <p class="group-name">{{ group.groupName }}</p>
                     <p class="group-desc">{{ group.description }}</p>
-                    <v-chip size="x-small" color="primary" variant="tonal" class="mt-1">
-                        멤버 {{ group.memberCount }}명
-                    </v-chip>
+                    <p class="group-memberCount">멤버 {{ group.memberCount }}명</p>
+                    <p class="invite-code-toggle" @click.stop="toggleInviteCode(group.groupId)">
+                        {{ visibleInviteCodes[group.groupId] ? group.inviteCode : '초대코드' }}
+                    </p>
                 </div>
                 <v-btn
                     v-if="editMode"
@@ -127,6 +130,11 @@ const emit = defineEmits(['leave'])
 const showLeaveDialog = ref(false)
 const showLastMemberDialog = ref(false)
 const selectedGroup = ref(null)
+const visibleInviteCodes = ref({})
+
+const toggleInviteCode = (groupId) => {
+    visibleInviteCodes.value[groupId] = !visibleInviteCodes.value[groupId]
+}
 
 const confirmLeave = (group) => {
     selectedGroup.value = group
@@ -155,16 +163,18 @@ const handleLeave = () => {
 .group-item {
     display: flex;
     align-items: stretch;
-    overflow: hidden;
-    border-radius: 8px;
-    height: 90px;
+    width: 100%;
+    min-height: 90px;
 }
 
-.group-img {
+.group-img-wrapper {
     flex-shrink: 0;
-    min-width: 90px;
-    max-width: 90px;
-    height: 90px;
+    aspect-ratio: 1 / 1;
+    align-self: stretch;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .group-info {
@@ -176,7 +186,7 @@ const handleLeave = () => {
 .group-name {
     font-size: 15px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -184,10 +194,24 @@ const handleLeave = () => {
 
 .group-desc {
     font-size: 13px;
-    color: #888;
+    color: var(--color-text-primary);
     margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.group-memberCount {
+    font-size: 12px;
+    color: var(--color-text-primary);
+    margin-top: 2px;
+}
+
+.invite-code-toggle {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+    cursor: pointer;
+    width: fit-content;
 }
 </style>
