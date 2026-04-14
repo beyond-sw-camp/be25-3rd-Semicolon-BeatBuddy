@@ -1,6 +1,5 @@
 <template>
   <div class="login-container">
-    <br><br>
     <!-- 로고 -->
     <div class="logo-section">
       <div class="logo-icon">
@@ -12,33 +11,43 @@
 
     <!-- 폼 -->
     <div class="form-section">
+      <v-form ref="formRef">
         <div class="input-group">
         <label>아이디</label>
         <v-text-field
           v-model="email"
           placeholder="아이디를 입력하세요"
+          :rules="emailRules"       
+          hide-details="auto"
           variant="solo"
           flat
           bg-color="#f0f0f0"
-          hide-details
           density="compact"
-          rounded="lg"
-        />
-      </div>
+          rounded="lg"/>
+        </div>
+      </v-form>
 
       <div class="input-group">
-        <label>비밀번호</label>
-        <v-text-field
-          v-model="password"
-          placeholder="비밀번호를 입력하세요"
-          type="password"
-          variant="solo"
-          flat
-          bg-color="#f0f0f0"
-          hide-details
-          density="compact"
-          rounded="lg"
-        />
+        <v-form>
+          <label>비밀번호</label>
+          <v-text-field
+            v-model="password"
+            placeholder="비밀번호를 입력하세요"
+            :type="showPassword ? 'text' : 'password'"           
+            variant="solo"
+            flat
+            bg-color="#f0f0f0"
+            hide-details
+            density="compact"
+            rounded="lg">
+            <template #append-inner>
+              <v-icon
+                :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                class="me-2" 
+                @click="showPassword = !showPassword"/>
+            </template>
+          </v-text-field>
+        </v-form>  
       </div>
 
       <!-- 에러 메시지 -->
@@ -51,6 +60,7 @@
         rounded="lg"
         class="login-btn"
         :loading="isLoading"
+        :disabled="isLoginDisabled || isLoading"
         @click="handleLogin"
       >
         로그인 하기
@@ -68,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { login } from "@/api/auth";
@@ -78,17 +88,29 @@ const authStore = useAuthStore();
 
 const email = ref("");
 const password = ref("");
+const showPassword = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref("");
+const formRef = ref(null)
+
+const emailRules = [
+  v => !!v || '이메일을 입력해주세요.',
+  v => /.+@.+\..+/.test(v) || '올바른 이메일 형식이 아닙니다.',
+];
+
+const isLoginDisabled = computed(() => !/.+@.+\..+/.test(email.value));
 
 async function handleLogin() {
-  isLoading.value = true;
   errorMessage.value = "";
+  const { valid } = await formRef.value.validate()  // 추가
+  if (!valid) return  // 유효성 검사 실패하면 중단
+
+  isLoading.value = true;
 
   try {
     const response = await login(email.value, password.value);
     const result = response.data.result;
-
+    
     authStore.setToken(result.accessToken);
     authStore.setUser({
       userId: result.userId,
@@ -98,8 +120,16 @@ async function handleLogin() {
 
     router.push("/");
   } catch (error) {
-    errorMessage.value =
-      error.response?.data?.message || "로그인에 실패했습니다.";
+    const status = error.response?.status
+    const message = error.response?.data?.message
+
+    if (message === '탈퇴한 계정입니다.') {
+      errorMessage.value = '탈퇴한 계정입니다.'
+    } else if (status === 404 || status === 401) {
+      errorMessage.value = '이메일 또는 비밀번호가 올바르지 않습니다.'
+    } else {
+      errorMessage.value = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+    }
   } finally {
     isLoading.value = false;
   }
@@ -108,9 +138,11 @@ async function handleLogin() {
 
 <style scoped>
 .login-container {
-  padding: 60px 24px 40px;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* 세로 방향 중앙 정렬 */
+  min-height: 100vh;       /* 화면 전체 높이를 차지하게 함 */
+  padding: 24px;           /* 상단 br 대신 적절한 패딩 */
   gap: 32px;
 }
 
@@ -172,10 +204,15 @@ async function handleLogin() {
 }
 
 .error-message {
-  color: #f44336;
+  color: #ff5252;
   font-size: 13px;
   text-align: center;
   margin: 0;
+}
+
+:deep(.v-messages__message),
+:deep(.v-field__message) {
+  color: #ff5252 !important;
 }
 
 .links {
@@ -198,5 +235,10 @@ async function handleLogin() {
 
 :deep(.v-field__input) {
   padding-left: 10px !important;
+}
+
+:deep(.v-field__append-inner) {
+  padding-right: 16px !important;
+  align-items: center;
 }
 </style>

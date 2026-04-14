@@ -30,6 +30,10 @@ api.interceptors.response.use(
         const authStore = useAuthStore()
         const originalRequest = error.config // 실패한 요청의 원본 설정
 
+        // 로그인/회원가입 요청은 인터셉터 건너뜀
+        if (originalRequest.url.includes('/auth/')) {
+            return Promise.reject(error)
+        }
         // 401 에러 && 재시도 안 한 요청이면
         // 401: Access Token 만료됐다는 뜻
         // _retry: 재시도 플래그
