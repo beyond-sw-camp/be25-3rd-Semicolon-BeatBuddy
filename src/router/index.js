@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,8 +81,9 @@ router.beforeEach((to, from, next) => {
     if (!isPublic && !authStore.isLoggedIn) {
         // !isPublic: 보호된 페이지인데 && !authStore.isLoggedIn: 로그인도 안 했으면 => /login 으로 강제 이동
         next('/login')
-    }
-    else {
+    } else if (isPublic && authStore.isLoggedIn) {
+        next('/')  // 이미 로그인했으면 홈으로
+    } else {
         next() // 아니면 그냥 통과
     }
 })
