@@ -22,7 +22,7 @@
                 <div class="group-img-wrapper">
                     <v-img
                         v-if="group.groupImageUrl"
-                        :src="`http://localhost:8088${group.groupImageUrl}`"
+                        :src="`${apiBaseUrl}${group.groupImageUrl}`"
                         cover
                     />
                     <v-icon v-else icon="mdi-account-group" color="primary" size="32" class="mx-3" />
@@ -124,6 +124,8 @@ defineProps({
     loading: Boolean,
     editMode: Boolean,
 })
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 const emit = defineEmits(['leave'])
 

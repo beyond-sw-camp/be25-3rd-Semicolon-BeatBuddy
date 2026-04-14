@@ -41,7 +41,6 @@ const fetchGroups = async () => {
     loading.value = true
     try {
         const res = await getMyGroups()
-        console.log(res.data)
         groups.value = res.data.result ?? res.data.data ?? []
     } catch (e) {
         console.error('그룹 목록 불러오기 실패', e)
@@ -73,7 +72,7 @@ onMounted(() => {
 .section-title {
     font-size: 16px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 .bottom-buttons {
