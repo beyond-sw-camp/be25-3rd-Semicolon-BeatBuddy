@@ -156,7 +156,7 @@ const handleLeave = () => {
 .group-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 5px;
     margin-bottom: 24px;
 }
 
@@ -199,6 +199,7 @@ const handleLeave = () => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-height: 20px;
 }
 
 .group-memberCount {

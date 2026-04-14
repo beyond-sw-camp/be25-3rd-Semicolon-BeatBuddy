@@ -53,14 +53,13 @@
             <div style="margin-bottom: 20px">
                 <v-text-field
                     v-model="form.description"
-                    label="한 줄 소개 *"
+                    label="한 줄 소개"
                     placeholder="그룹 메인에 노출될 소개글 (최대 50자)"
                     maxlength="50"
                     counter
                     variant="outlined"
                     density="comfortable"
                     persistent-placeholder
-                    :rules="[v => !!v?.trim() || '한 줄 소개를 입력해주세요.']"
                 />
             </div>
             <div style="margin-bottom: 25px">
@@ -211,6 +210,7 @@ const nicknameRules = [
 
 const inviteCodeRules = [
     v => !!v?.trim() || '초대 코드를 입력해주세요.',
+    v => /^[A-Z0-9]+$/.test(v) || '초대코드는 영문 대문자와 숫자만 가능합니다.',
     () => inviteCodeError.value ?? true,
 ]
 
@@ -218,7 +218,6 @@ const isFormValid = computed(() => {
     return (
         !!form.value.groupName.trim() &&
         !!form.value.groupNickname.trim() &&
-        !!form.value.description.trim() &&
         !!form.value.inviteCode.trim()
     )
 })
