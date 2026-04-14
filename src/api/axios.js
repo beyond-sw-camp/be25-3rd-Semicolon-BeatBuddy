@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseURL: '',
     headers: { 'Content-Type': 'application/json' },
     timeout: 10000,
     withCredentials: true, // refreshToken 쿠키 자동 전송
@@ -55,7 +55,7 @@ api.interceptors.response.use(
 
             try {
                 // refreshToken은 쿠키로 자동 전송됨 (withCredentials: true)
-                const res = await api.post('/v1/auth/token/refresh')
+                const res = await api.post('/api/v1/auth/token/refresh')
                 const newAccessToken = res.data?.result?.accessToken
                 if (!newAccessToken) throw new Error('토큰 갱신 실패')
 

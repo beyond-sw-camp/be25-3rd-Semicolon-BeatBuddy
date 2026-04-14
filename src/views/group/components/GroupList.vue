@@ -17,15 +17,14 @@
             border
             flat
             style="display: flex; overflow: hidden;"
+            @click="selectGroup(group)"
         >
             <div class="group-item">
                 <div class="group-img-wrapper">
                     <v-img
-                        v-if="group.groupImageUrl"
-                        :src="`${apiBaseUrl}${group.groupImageUrl}`"
+                        :src="group.groupImageUrl || '/default-group.jpg'"
                         cover
                     />
-                    <v-icon v-else icon="mdi-account-group" color="primary" size="32" class="mx-3" />
                 </div>
                 <div class="group-info">
                     <p class="group-name">{{ group.groupName }}</p>
@@ -42,7 +41,7 @@
                     color="red"
                     size="small"
                     class="ml-auto"
-                    @click="confirmLeave(group)"
+                    @click.stop="confirmLeave(group)"
                 />
             </div>
         </v-card>
@@ -116,7 +115,7 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
     groups: {
         type: Array,
         default: () => []
@@ -125,9 +124,7 @@ defineProps({
     editMode: Boolean,
 })
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
-
-const emit = defineEmits(['leave'])
+const emit = defineEmits(['leave', 'select'])
 
 const showLeaveDialog = ref(false)
 const showLastMemberDialog = ref(false)
@@ -145,6 +142,11 @@ const confirmLeave = (group) => {
     } else {
         showLeaveDialog.value = true
     }
+}
+
+const selectGroup = (group) => {
+    if (props.editMode) return
+    emit('select', group.groupId)
 }
 
 const handleLeave = () => {
