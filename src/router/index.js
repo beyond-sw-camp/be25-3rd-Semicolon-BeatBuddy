@@ -13,7 +13,7 @@ const router = createRouter({
         path: '/group/create',
         name: 'group-create',
         component: () => import('../views/group/GroupCreateView.vue'),
-        meta: { layout: 'default', title: '새 그룹 만들기' }
+        meta: { layout: 'default', title: '새 그룹 만들기', showBack: true }
         },
         {
         path: '/group/join',
