@@ -58,7 +58,14 @@
                         <p class="album-name">{{ track.albumName }}</p>
                     </div>
 
+                    <!-- 이미 선택된 곡 문구 표시 -->
+                    <div v-if="musicStore.isAlreadySelected(track.trackId)" class="added-text">
+                        이미 추가됨
+                    </div>
+
+                    <!-- 선택 안된 곡 버튼 표시 -->
                     <v-btn
+                        v-else
                         color="primary"
                         variant="tonal"
                         rounded="lg"
@@ -86,7 +93,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { searchTracks } from '@/api/music'
 
+// store import
+import { useMusicStore } from '@/stores/music'
+
 const router = useRouter()
+
+// store 사용
+const musicStore = useMusicStore()
 
 const keyword = ref('')
 const tracks = ref([])
@@ -128,7 +141,11 @@ const handleSearch = async () => {
 }
 
 const selectTrack = (track) => {
-    console.log('선택한 곡:', track)
+    const added = musicStore.addTrack(track)
+
+    if (added) {
+        router.push('/music/select')
+    }
 }
 </script>
 
@@ -315,4 +332,10 @@ const selectTrack = (track) => {
     flex-shrink: 0;
 }
 
+.added-text {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: #9ca3af;
+    font-weight: 500;
+}
 </style>

@@ -1,69 +1,135 @@
 <template>
     <div class="music-select-view">
-        <div class="top-section">
-            <div class="top-bar">
-                <h1 class="page-title">음악 선택</h1>
+        <div class="top-fixed">
+            <div class="top-section">
+                <div class="top-bar">
+                    <h1 class="page-title">음악 선택</h1>
 
-                <div class="top-actions">
-                    <button class="text-button" @click="goBack">취소</button>
-                    <v-btn class="save-button" variant="tonal" rounded="lg" disabled>
-                        저장
-                    </v-btn>
+                    <div class="top-actions">
+                        <button class="text-button" @click="goBack">취소</button>
+
+                        <!-- 10곡일 때만 저장 버튼 활성화 -->
+                        <v-btn 
+                            class="save-button" 
+                            color="primary" 
+                            rounded="lg" 
+                            :disabled="!musicStore.isComplete"
+                        >
+                            저장
+                        </v-btn>
+                    </div>
+                </div>
+
+                <!-- 선택된 곡 개수를 store 기준으로 표시 -->
+                <div class="count-row">
+                    <p class="count-text">선택된 곡: {{ musicStore.selectedCount }}/10</p>
+
+                    <span v-if="musicStore.isComplete" class="complete-badge">✓ 완료</span>
                 </div>
             </div>
 
-            <p class="count-text">선택된 곡: {{ selectedCount }}/10</p>
+            <div class="add-button-wrap">
+                <!-- 10곡이면 곡 추가 버튼 비활성화 -->
+                <v-btn
+                    color="primary"
+                    size="large"
+                    rounded="xl"
+                    class="add-button"
+                    :disabled="musicStore.isComplete"
+                    @click="goToSearch"
+                >
+                    + 곡 추가하기
+                </v-btn>
+            </div>
         </div>
 
-        <div class="bottom-section">
-            <v-btn
-                color="primary"
-                size="large"
-                rounded="xl"
-                class="add-button"
-                @click="goToSearch"
-            >
-                + 곡 추가하기
-            </v-btn>
+        <div class="content-section">
+        <!-- 선택된 곡이 있으면 목록 표시 -->
+        <div v-if="musicStore.selectedCount > 0" class="selected-section">
+            <h2 class="selected-title">선택된 곡 ({{ musicStore.selectedCount }}/10)</h2>
 
-        <div class="empty-section">
-            <div class="empty-icon">♫</div>
-            <p class="empty-text">
-                곡 추가하기 버튼을 눌러<br />
-                좋아하는 음악을 추가하세요.
-            </p>
+                <div class="selected-list">
+                    <div
+                        v-for="track in musicStore.selectedTracks"
+                        :key="track.trackId"
+                        class="track-card"
+                    >
+                        <img
+                            v-if="track.coverUrl"
+                            :src="track.coverUrl"
+                            alt="앨범 커버"
+                            class="album-image"
+                        />
+                        
+                        <div v-else class="album-placeholder">♫</div>
+
+                        <div class="track-info">
+                            <p class="track-name">{{ track.trackName }}</p>
+                            <p class="artist-name">{{ track.artistName }}</p>
+                        </div>
+
+                        <!-- 삭제 버튼 -->
+                        <button
+                            class="remove-button"
+                            @click="removeTrack(track.trackId)"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 아무 곡도 없을 때만 빈 상태 표시 -->
+            <div v-else class="empty-section">
+                <div class="empty-icon">♫</div>
+                <p class="empty-text">
+                    곡 추가하기 버튼을 눌러<br />
+                    좋아하는 음악을 추가하세요.
+                </p>
+            </div>
         </div>
     </div>
-</div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router';
+import { useMusicStore } from '@/stores/music';
 
 const router = useRouter()
-const selectedCount = ref(0)
+const musicStore = useMusicStore()
 
 const goBack = () => {
     router.push('/music')
 }
 
+// 검색 화면으로 이동
 const goToSearch = () => {
     router.push('/music/search')
+}
+
+// 선택된 곡 삭제
+const removeTrack = (trackId) => {
+    musicStore.removeTrack(trackId)
 }
 </script>
 
 <style scoped>
 .music-select-view {
-    min-height: calc(100dvh - 64px);
+    height: calc(100dvh - 64px);
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+.top-fixed {
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .top-section {
     padding: 28px 24px 20px;
-    border-bottom: 1px solid #e5e7eb;
     background-color: #ffffff;
 }
 
@@ -100,18 +166,33 @@ const goToSearch = () => {
     font-weight: 700;
 }
 
+.count-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .count-text {
     margin: 0;
     font-size: 18px;
     color: #1f2937;
 }
 
-.bottom-section {
-    flex: 1;
-    padding: 20px 24px 0;
+.complete-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background-color: #e8f7ec;
+    color: #16a34a;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.add-button-wrap {
+    padding: 20px 24px 24px;
     background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
 }
 
 .add-button {
@@ -122,6 +203,102 @@ const goToSearch = () => {
     letter-spacing: -0.2px;
     font-weight: 700;
     box-shadow: none;
+}
+
+.content-section {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px 24px 24px;
+    background-color: #ffffff; 
+}
+
+.selected-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.selected-title {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    flex-shrink: 0;
+}
+
+.selected-list {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.track-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+
+.album-image,
+.album-placeholder {
+    width: 68px;
+    height: 68px;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.album-image {
+    object-fit: cover;
+}
+
+.album-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    font-size: 28px;
+}
+
+.track-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.track-name {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.artist-name {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.remove-button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    font-size: 24px;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 .empty-section {
