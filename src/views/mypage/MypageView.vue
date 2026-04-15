@@ -416,7 +416,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useUserStore } from '@/stores/userStore'
-
+import { logout } from '@/api/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 const userStore = useUserStore()
@@ -666,7 +666,12 @@ const openLogoutDialog = () => {
 }
 
 const handleLogout = async () => {
-  await authStore.logout()
+  try {
+    await logout()             // 1. 서버 호출 - 쿠키 삭제 응답 받음
+  } catch (e) {
+    // 서버 에러나도 어차피 로그아웃은 시켜야 함
+  }
+  authStore.logout()           // 2. localStorage 정리
   router.replace('/auth')
 }
 
@@ -1266,4 +1271,5 @@ onMounted(loadMypage)
     min-width: 210px;
   }
 }
+
 </style>

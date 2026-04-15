@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/authStore'
 // 기본 설정이 담긴 axios 인스턴스 만드는 것
 // baseURL: 모든 요청 앞에 자동으로 붙음
 const api = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
     withCredentials: true  // 쿠키 자동으로 붙여줌 (Refresh Token)
 })
 

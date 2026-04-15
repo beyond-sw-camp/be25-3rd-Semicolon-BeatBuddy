@@ -11,6 +11,7 @@ import {
   withdraw,
 } from '@/api/userApi'
 import { getErrorMessage, getResponseResult } from '@/api/response'
+import { useAuthStore } from '@/stores/authStore'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -122,8 +123,8 @@ export const useUserStore = defineStore('user', {
 
     async withdrawMe() {
       await withdraw()
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('user')
+      const authStore = useAuthStore()
+      authStore.logout()        // 이러면 'token', 'user' 다 지워짐
       this.$reset()
     },
   },

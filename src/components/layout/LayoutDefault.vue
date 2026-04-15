@@ -33,7 +33,7 @@ const route = useRoute()
 .main-content {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
   padding-top: 64px;
   padding-bottom: var(--app-footer-height);
 }
