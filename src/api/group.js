@@ -1,4 +1,4 @@
-import api from './index.js'
+import api from './axios.js'
 
 // 내 그룹 목록 조회
 export const getMyGroups = () => api.get('/api/v1/groups/my-groups')
@@ -25,3 +25,9 @@ export const joinGroup = (groupId, data) => api.post(`/api/v1/groups/${groupId}/
 
 // 그룹 나가기
 export const leaveGroup = (groupId) => api.delete(`/api/v1/groups/${groupId}/members/me`)
+
+// 친구 관련
+export const getRecommendations = (groupId) => api.get(`/api/v1/groups/${groupId}/recommendations`)
+
+export const skipMember = (groupId, targetUserId) =>
+    api.post(`/api/v1/groups/${groupId}/recommendations/${targetUserId}/skip`)

@@ -17,6 +17,7 @@
             border
             flat
             style="display: flex; overflow: hidden;"
+            @click="selectGroup(group)"
         >
             <div class="group-item">
                 <div class="group-img-wrapper">
@@ -42,7 +43,7 @@
                     color="red"
                     size="small"
                     class="ml-auto"
-                    @click="confirmLeave(group)"
+                    @click.stop="confirmLeave(group)"
                 />
             </div>
         </v-card>
@@ -56,8 +57,8 @@
                 <v-btn icon="mdi-close" variant="text" size="small" @click="showLeaveDialog = false" />
             </v-card-title>
             <v-card-text style="padding: 8px 24px 16px">
-                <p style="font-size: 15px; color: #333;">정말 이 그룹에서 나가시겠습니까?</p>
-                <p style="font-size: 13px; color: #aaa; margin-top: 6px;">나간 후에는 다시 초대 코드가 필요합니다.</p>
+                <p style="font-size: 15px; color: var(--color-text-primary);">정말 이 그룹에서 나가시겠습니까?</p>
+                <p style="font-size: 13px; color: var(--color-text-secondary); margin-top: 6px;">나간 후에는 다시 초대 코드가 필요합니다.</p>
             </v-card-text>
             <v-card-actions style="padding: 0 24px 24px; gap: 12px">
                 <v-btn
@@ -88,7 +89,7 @@
                 <v-btn icon="mdi-close" variant="text" size="small" @click="showLastMemberDialog = false" />
             </v-card-title>
             <v-card-text style="padding: 8px 24px 16px">
-                <p style="font-size: 15px; color: #333;">이 그룹에서 나가면 그룹이 삭제됩니다. 정말 나가시겠습니까?</p>
+                <p style="font-size: 15px; color: var(--color-text-primary);">이 그룹에서 나가면 그룹이 삭제됩니다. 정말 나가시겠습니까?</p>
             </v-card-text>
             <v-card-actions style="padding: 0 24px 24px; gap: 12px">
                 <v-btn
@@ -116,7 +117,7 @@
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
     groups: {
         type: Array,
         default: () => []
@@ -124,10 +125,9 @@ defineProps({
     loading: Boolean,
     editMode: Boolean,
 })
-
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const emit = defineEmits(['leave'])
+const emit = defineEmits(['leave', 'select'])
 
 const showLeaveDialog = ref(false)
 const showLastMemberDialog = ref(false)
@@ -145,6 +145,11 @@ const confirmLeave = (group) => {
     } else {
         showLeaveDialog.value = true
     }
+}
+
+const selectGroup = (group) => {
+    if (props.editMode) return
+    emit('select', group.groupId)
 }
 
 const handleLeave = () => {
