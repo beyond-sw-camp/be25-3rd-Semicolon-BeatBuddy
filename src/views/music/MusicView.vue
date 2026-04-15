@@ -29,7 +29,11 @@
         </div>
 
         <div v-else class="profile-section">
-            <div class="profile-hero">
+            <!-- 음악 프로필 배경 이미지 동적 적용 -->
+            <div 
+                class="profile-hero"
+                :style="{ backgroundImage: heroBackground }"
+            >
                 <div class="overlay"></div>
 
                 <div class="hero-top">
@@ -46,8 +50,8 @@
                 </div>
 
                 <div class="hero-content">
-                    <!-- 나중에 마이페이지 연동 예정 -->
-                    <h2 class="nickname">음악대장</h2>
+                    <!-- 음악 프로필 닉네임 동적 출력 -->
+                    <h2 class="nickname">{{ nickname }}</h2>
                     <p class="hero-subtitle">이 음악들이 나를 표현합니다.</p>
                 </div>
 
@@ -98,10 +102,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getTaste } from '@/api/music'
 import { useMusicStore } from '@/stores/music'
+import api from '@/api/axios'
 
 const router = useRouter()
 const musicStore = useMusicStore()
@@ -110,6 +115,22 @@ const loading = ref(true)
 const hasTaste = ref(false)
 const tasteTracks = ref([])
 const selectedTrack = ref(null)
+
+// 사용자 정보 상태값
+const nickname = ref('')
+const profileImageUrl = ref('')
+
+// 배경 이미지 계산
+const heroBackground = computed(() => {
+    const image = profileImageUrl.value
+        ? `http://localhost:8088${profileImageUrl.value}`
+        : 'http://localhost:8088/default-profile.jpg'
+
+    return `
+        linear-gradient(rgba(32, 16, 64, 0.72), rgba(18, 7, 38, 0.88)),
+        url(${image})
+    `
+})
 
 const goToSelect = () => {
     router.push('/music/select')
@@ -142,6 +163,19 @@ const closeTrackModal = () => {
     selectedTrack.value = null
 }
 
+// 사용자 정보 조회
+const fetchUserProfile = async () => {
+    try {
+        const response = await api.get('/api/v1/users/me')
+        const user = response.data.result
+
+        nickname.value = user.nickname
+        profileImageUrl.value = user.profileImageUrl        
+    } catch (error) {
+        console.error('사용자 정보 조회 실패:', error)
+    }
+}
+
 const fetchTaste = async () => {
     loading.value = true
 
@@ -171,8 +205,12 @@ const fetchTaste = async () => {
     }
 }
 
-onMounted(() => {
-    fetchTaste()
+// 취향 곡 목록 조회 + 사용자 정보 조회 동시 실행
+onMounted(async () => {
+    await Promise.all([
+        fetchTaste(),
+        fetchUserProfile()
+    ])
 })
 </script>
 
@@ -253,9 +291,9 @@ onMounted(() => {
     overflow: hidden;
     padding: 18px;
     box-sizing: border-box;
-    background:
-        linear-gradient(rgba(32, 16, 64, 0.72), rgba(18, 7, 38, 0.88)),
-        url('https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop') center/cover;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .overlay {
