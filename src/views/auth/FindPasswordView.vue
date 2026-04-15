@@ -230,7 +230,10 @@ async function handleSendCode() {
     startTimer()
   } catch (error) {
     const status = error.response?.status
-    if (status === 404) {
+    const message = error.response?.data?.message
+    if (message === '탈퇴한 계정입니다.') {
+      errorMessage.value = '탈퇴한 계정입니다.'
+    } else if (status === 404) {
       errorMessage.value = '가입되지 않은 이메일입니다.'
     } else if (status === 429) {
       errorMessage.value = '인증코드 발송 횟수를 초과했습니다.'

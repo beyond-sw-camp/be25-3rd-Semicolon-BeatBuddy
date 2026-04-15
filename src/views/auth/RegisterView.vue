@@ -313,8 +313,16 @@ async function handleSendCode() {
     codeSent.value = true
     startTimer()
   } catch (error) {
+    const status = error.response?.status
     const message = error.response?.data?.message
-    codeErrorMessage.value = message || '이메일 발송에 실패했습니다.'
+    if (message === '탈퇴한 계정입니다.') {
+      codeErrorMessage.value = '탈퇴한 계정입니다.'
+    } else if (status === 409) {
+      codeErrorMessage.value = '이미 사용 중인 이메일입니다.'
+    } else {
+      codeErrorMessage.value = '이메일 발송에 실패했습니다.'
+    }
+    // codeErrorMessage.value = message || '이메일 발송에 실패했습니다.'
   } finally {
     isLoading.value = false
   }

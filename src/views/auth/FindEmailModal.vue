@@ -27,7 +27,8 @@
         <!-- 결과 표시 -->
         <template v-else>
           <div :class="['result-message', result ? 'success' : 'error']">
-            <p v-if="result">가입된 이메일입니다.</p>
+            <p v-if="result === true">가입된 이메일입니다.</p>
+            <p v-else-if="result === 'deleted'">탈퇴한 계정입니다.</p>
             <p v-else>가입되지 않은 이메일입니다.</p>
           </div>
           <v-btn color="primary" block rounded="lg" @click="handleClose">확인</v-btn>
@@ -83,7 +84,13 @@ async function handleCheck() {
     const response = await checkEmail(email.value)
     result.value = response.data.result.registered
   } catch (error) {
-    result.value = false
+    const message = error.response?.data?.message
+    if (message === '탈퇴한 계정입니다.') {
+      result.value = 'deleted'
+    }
+    else {
+      result.value = false
+    }
   } finally {
     isLoading.value = false
   }
