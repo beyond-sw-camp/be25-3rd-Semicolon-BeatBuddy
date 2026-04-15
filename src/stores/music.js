@@ -5,6 +5,9 @@ export const useMusicStore = defineStore('music', () => {
     // 선택한 곡 목록
     const selectedTracks = ref([])
 
+    // 수정 모드 여부
+    const isEditMode = ref(false)
+
     // 선택 개수
     const selectedCount = computed(() => selectedTracks.value.length)
     // 10곡 여부
@@ -40,8 +43,16 @@ export const useMusicStore = defineStore('music', () => {
         selectedTracks.value = tracks
     }
 
+    // 수정 모드 켜기
+    const startEditMode = () => {
+        isEditMode.value = true
+    }
 
-    // 수정 전 트랙
+    // 수정 모드 끄기
+    const endEditMode = () => {
+        isEditMode.value = false
+    }
+
     return {
         selectedTracks,
         selectedCount,
@@ -50,6 +61,9 @@ export const useMusicStore = defineStore('music', () => {
         addTrack,
         removeTrack,
         clearTracks,
-        setTracks
+        setTracks,
+        isEditMode,
+        startEditMode,
+        endEditMode
     }
 })

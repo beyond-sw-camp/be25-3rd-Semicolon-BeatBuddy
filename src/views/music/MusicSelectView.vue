@@ -96,7 +96,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMusicStore } from '@/stores/music';
-import { saveTaste } from '@/api/music';
+import { saveTaste, updateTaste } from '@/api/music';
 
 const router = useRouter()
 const musicStore = useMusicStore()
@@ -105,6 +105,7 @@ const musicStore = useMusicStore()
 const saving = ref(false)
 
 const goBack = () => {
+    musicStore.endEditMode()
     router.push('/music')
 }
 
@@ -136,8 +137,18 @@ const handleSave = async () => {
             }))
         }
 
-        const result = await saveTaste(payload)
-        console.log('저장 성공:', result)
+        if (musicStore.isEditMode) {
+            // 수정 모드면 PUT
+            const result = await updateTaste(payload)
+            console.log('수정 저장 성공:', result)
+        } else {
+            // 최초 저장이면 POST
+            const result = await saveTaste(payload)
+            console.log('최초 저장 성공:', result)
+        }
+
+        // 저장 끝나면 수정 모드 종료
+        musicStore.endEditMode()
 
         // 저장 성공 후 음악 메인 화면으로 이동
         router.push('/music')

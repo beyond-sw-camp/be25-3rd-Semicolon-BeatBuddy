@@ -128,6 +128,9 @@ const goToEdit = () => {
         }))
     )
 
+    // 수정 모드 시작
+    musicStore.startEditMode()
+
     router.push('/music/select')
 }
 
