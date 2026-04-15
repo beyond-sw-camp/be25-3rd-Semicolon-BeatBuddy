@@ -1,9 +1,9 @@
 <template>
     <div class="create-page">
         <div class="image-upload">
-            <v-avatar size="100" color="#f0f0f0">
+            <v-avatar size="100" color="surface-variant">
                 <v-img v-if="previewImage" :src="previewImage" cover />
-                <v-icon v-else icon="mdi-account-group" size="48" color="#aaa" />
+                <v-icon v-else icon="mdi-account-group" size="48" color="secondary" />
             </v-avatar>
             <v-btn @click="triggerFileInput"
                 icon="mdi-camera"
@@ -97,7 +97,7 @@
                     <v-btn icon="mdi-close" variant="text" size="small" @click="goHome" />
                 </v-card-title>
                 <v-card-text style="padding: 8px 24px 16px">
-                    <p style="font-size: 15px; color: #333;">
+                    <p style="font-size: 15px; color: var(--color-text-primary);">
                         <span style="color: var(--color-primary); font-weight: 700;">{{ groupName }}</span>
                         그룹이 성공적으로 생성되었습니다.
                     </p>
@@ -125,7 +125,7 @@
                     <v-btn icon="mdi-close" variant="text" size="small" @click="showErrorDialog = false" />
                 </v-card-title>
                 <v-card-text style="padding: 8px 24px 16px">
-                    <p style="font-size: 15px; color: #333;">{{ errorMessage }}</p>
+                    <p style="font-size: 15px; color: var(--color-text-primary);">{{ errorMessage }}</p>
                 </v-card-text>
                 <v-card-actions style="padding: 0 24px 24px">
                     <v-btn
@@ -150,7 +150,7 @@
                     <v-btn icon="mdi-close" variant="text" size="small" @click="showImageErrorDialog = false" />
                 </v-card-title>
                 <v-card-text style="padding: 8px 24px 16px">
-                    <p style="font-size: 15px; color: #333;">5MB 이하의 이미지만 업로드할 수 있습니다.</p>
+                    <p style="font-size: 15px; color: var(--color-text-primary);">5MB 이하의 이미지만 업로드할 수 있습니다.</p>
                 </v-card-text>
                 <v-card-actions style="padding: 0 24px 24px">
                     <v-btn
@@ -331,7 +331,7 @@ const goHome = () => {
 
 .image-hint {
     font-size: 12px;
-    color: #aaa;
+    color: var(--color-text-secondary);
     margin-top: 8px;
 }
 </style>

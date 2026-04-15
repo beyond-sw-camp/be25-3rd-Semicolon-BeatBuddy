@@ -55,7 +55,7 @@
                     <v-btn icon="mdi-close" variant="text" size="small" @click="goHome" />
                 </v-card-title>
                 <v-card-text style="padding: 8px 24px 16px">
-                    <p style="font-size: 15px; color: #333;">
+                    <p style="font-size: 15px; color: var(--color-text-primary);">
                         <span style="color: var(--color-primary); font-weight: 700;">{{ groupName }}</span>
                         그룹에 성공적으로 가입되었습니다.
                     </p>
@@ -227,7 +227,7 @@ const goHome = () => {
     background: #fff;
     border-radius: 12px;
     padding: 24px;
-    border: 1px solid #eee;
+    border: 1px solid var(--color-border);
 }
 
 .info-box {
@@ -243,7 +243,7 @@ const goHome = () => {
     gap: 6px;
     font-size: 14px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text-primary);
     margin-bottom: 8px;
 }
 
@@ -253,7 +253,7 @@ const goHome = () => {
 
 .info-desc {
     font-size: 13px;
-    color: #555;
+    color: var(--color-text-secondary);
     line-height: 1.6;
 }
 </style>
