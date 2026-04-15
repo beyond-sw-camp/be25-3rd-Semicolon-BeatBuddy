@@ -36,6 +36,12 @@ export const useMusicStore = defineStore('music', () => {
         selectedTracks.value = []
     }
 
+    const setTracks = (tracks) => {
+        selectedTracks.value = tracks
+    }
+
+
+    // 수정 전 트랙
     return {
         selectedTracks,
         selectedCount,
@@ -43,6 +49,7 @@ export const useMusicStore = defineStore('music', () => {
         isAlreadySelected,
         addTrack,
         removeTrack,
-        clearTracks
+        clearTracks,
+        setTracks
     }
 })

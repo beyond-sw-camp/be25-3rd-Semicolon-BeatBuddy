@@ -13,3 +13,9 @@ export const saveTaste = async (payload) => {
     const response = await api.post('/api/v1/music/taste', payload)
     return response.data
 }
+
+// 저장된 취향 곡 조회
+export const getTaste = async () => {
+    const response = await api.get('/api/v1/music/taste')
+    return response.data
+}
