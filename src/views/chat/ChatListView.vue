@@ -161,9 +161,11 @@ const formatTime = (dateStr) => {
 
 <style scoped>
 .chat-list {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--app-footer-height));
+  height: 100%;
   background: #ffffff;
   overflow: hidden;
 }
@@ -205,6 +207,7 @@ const formatTime = (dateStr) => {
 
 .room-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 

@@ -245,9 +245,11 @@ onUnmounted(() => {
 
 <style scoped>
 .chat-room {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - var(--app-footer-height));
+  height: 100%;
   background: #ffffff;
   overflow: hidden;
 }
@@ -329,6 +331,7 @@ onUnmounted(() => {
 
 .message-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 16px 16px 8px;
 }

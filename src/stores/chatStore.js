@@ -200,6 +200,8 @@ export const useChatStore = defineStore('chat', () => {
           const event = JSON.parse(frame.body)
           handleEvent(event)
         })
+
+        loadRooms().catch(console.error)
       },
       onDisconnect: () => {
         isConnected.value = false
@@ -233,7 +235,12 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   const handleEvent = (event) => {
-    switch (event.type) {
+    const eventType = String(event?.type ?? '')
+      .trim()
+      .replace(/[\s-]+/g, '_')
+      .toUpperCase()
+
+    switch (eventType) {
       case 'NEW_MESSAGE':
         loadRooms().catch(console.error)
         break
@@ -245,6 +252,10 @@ export const useChatStore = defineStore('chat', () => {
         break
       case 'OPPONENT_EXITED':
         isOpponentExited.value = true
+        loadRooms().catch(console.error)
+        break
+      default:
+        // Unknown event names should still refresh the room list so the UI stays in sync.
         loadRooms().catch(console.error)
         break
     }
