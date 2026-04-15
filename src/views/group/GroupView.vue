@@ -53,7 +53,7 @@
                             <div class="card-avatar">
                                 <img
                                     v-if="currentRecommendation.profileImageUrl"
-                                    :src="currentRecommendation.profileImageUrl"
+                                    :src="`${apiBaseUrl}${currentRecommendation.profileImageUrl}`"
                                     class="avatar-img"
                                 />
                                 <span v-else class="mdi mdi-account avatar-icon" />
@@ -155,6 +155,7 @@ import { useFriendStore } from '@/stores/friendStore'
 const router = useRouter()
 const groupStore = useGroupStore()
 const friendStore = useFriendStore()
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 // 기본 상태
 const loading = ref(false)
