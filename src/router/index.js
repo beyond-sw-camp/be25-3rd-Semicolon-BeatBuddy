@@ -12,9 +12,15 @@ const router = createRouter({
         },
         {
         path: '/chat',
-        name: 'chat',
-        component: () => import('../views/chat/ChatView.vue'),
-        meta: { layout: 'default', title: '채팅' }
+        name: 'chat-list',
+        component: () => import('../views/chat/ChatListView.vue'),
+        meta: { layout: 'default', title: '채팅', hideHeader: true },
+        },
+        {
+        path: '/chat/:roomId',
+        name: 'chat-room',
+        component: () => import('../views/chat/ChatRoomView.vue'),
+        meta: { layout: 'default', title: '채팅방', hideHeader: true },
         },
         {
         path: '/friend',
