@@ -15,19 +15,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import Header from '../common/Header.vue'
 import Footer from '../common/Footer.vue'
-
-const route = useRoute()
-
-const isMusicFullScreenPage = computed (() =>
-    ['/music/select', '/music/search'].includes(route.path)
-)
-
-const hideHeader = computed(() => isMusicFullScreenPage.value)
-const reduceFooterPadding = computed(() => isMusicFullScreenPage.value)
 </script>
 
 <style scoped>
@@ -48,13 +37,5 @@ const reduceFooterPadding = computed(() => isMusicFullScreenPage.value)
     overflow-y: auto;
     padding-bottom: 64px;
     padding-top: 64px;
-}
-
-.main-content.no-header {
-    padding-top: 0;
-}
-
-.main-content.no-footer-padding {
-    padding-bottom: 0;
 }
 </style>

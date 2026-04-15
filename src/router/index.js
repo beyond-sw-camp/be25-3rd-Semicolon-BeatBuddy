@@ -31,13 +31,13 @@ const router = createRouter({
         path: '/music/select',
         name: 'musicSelect',
         component: () => import('../views/music/MusicSelectView.vue'),
-        meta: { layout: 'default' }
+        meta: { layout: 'default', title: '음악' }
         },
         {
         path: '/music/search',
         name: 'musicSearch',
         component: () => import('../views/music/MusicSearchView.vue'),
-        meta: { layout: 'default' }
+        meta: { layout: 'default', title: '음악' }
         },
         {
         path: '/mypage',
