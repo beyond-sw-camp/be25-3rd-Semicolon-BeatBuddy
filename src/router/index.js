@@ -46,16 +46,10 @@ const router = createRouter({
         component: () => import('../views/auth/LoginView.vue'),
         meta: { layout: 'auth' }
         },
-        /*{
+        {
         path: '/register',
         name: 'register',
         component: () => import('../views/auth/RegisterView.vue'),
-        meta: { layout: 'auth' }
-        },
-        {
-        path: '/find-email',
-        name: 'findEmail',
-        component: () => import('../views/auth/FindEmailView.vue'),
         meta: { layout: 'auth' }
         },
         {
@@ -69,28 +63,44 @@ const router = createRouter({
         name: 'onboarding',
         component: () => import('../views/auth/OnboardingView.vue'),
         meta: { layout: 'auth' }
-        }*/
+        }
     ],
 })
 // 페이지 이동할 때마다 먼저 실행되는 함수
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
     // to: 지금 가려는 페이지
     // from: 지금 있던 페이지
     // next(): "통과시켜줘" 하는 함수
 
-    const authStore = useAuthStore()
-    // 로그인 없이 접근 가능한 페이지 목록
-    const publicPages = ['/login', '/register', '/find-email', '/find-password', '/onboarding']
-    // 지금 가려는 페이지가 그 목록에 있는지 확인
+    // const authStore = useAuthStore()
+    // // 로그인 없이 접근 가능한 페이지 목록
+    // const publicPages = ['/login', '/register', '/find-password', '/onboarding']
+    // // 지금 가려는 페이지가 그 목록에 있는지 확인
+    // const isPublic = publicPages.includes(to.path)
+
+    // // if (!isPublic && !authStore.isLoggedIn) {
+    // //     // !isPublic: 보호된 페이지인데 && !authStore.isLoggedIn: 로그인도 안 했으면 => /login 으로 강제 이동
+    // //     next('/login')
+    // // } else if (isPublic && authStore.isLoggedIn) {
+    // //     next('/')  // 이미 로그인했으면 홈으로
+    // // } else {
+    // //     next() // 아니면 그냥 통과
+    // // }
+    // if (!isPublic && !authStore.isLoggedIn) {
+    //     return '/login'
+    // }
+    // else if (isPublic && authStore.isLoggedIn) {
+    //     return '/'
+    // }
+
+    const token = localStorage.getItem('token')
+    const publicPages = ['/login', '/register', '/find-password', '/onboarding']
     const isPublic = publicPages.includes(to.path)
 
-    if (!isPublic && !authStore.isLoggedIn) {
-        // !isPublic: 보호된 페이지인데 && !authStore.isLoggedIn: 로그인도 안 했으면 => /login 으로 강제 이동
-        next('/login')
-    } else if (isPublic && authStore.isLoggedIn) {
-        next('/')  // 이미 로그인했으면 홈으로
-    } else {
-        next() // 아니면 그냥 통과
+    if (!isPublic && !token) {
+        return '/login'
+    } else if (isPublic && token) {
+        return '/'
     }
 })
 
