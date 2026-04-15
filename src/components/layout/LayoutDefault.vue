@@ -1,13 +1,7 @@
 <template>
     <div class="app-container">
-        <Header v-if="!hideHeader" />
-        <main 
-            class="main-content" 
-            :class="{ 
-                'no-header': hideHeader,
-                'no-footer-padding': reduceFooterPadding
-            }"
-        >
+        <Header />
+        <main class="main-content">
             <RouterView />
         </main>
         <Footer />
