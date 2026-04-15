@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 
+const protectedLayout = { layout: 'default', requiresAuth: true }
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -102,6 +104,23 @@ router.beforeEach((to) => {
     } else if (isPublic && token) {
         return '/'
     }
+})
+
+router.beforeEach((to) => {
+  const isAuthenticated = Boolean(localStorage.getItem('accessToken'))
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return {
+      path: '/auth',
+      query: { redirect: to.fullPath },
+    }
+  }
+
+  if (to.meta.guestOnly && isAuthenticated) {
+    return '/mypage'
+  }
+
+  return true
 })
 
 export default router
