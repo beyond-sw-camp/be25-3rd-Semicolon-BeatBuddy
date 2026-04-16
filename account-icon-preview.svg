@@ -1,0 +1,47 @@
+<svg width="760" height="220" viewBox="0 0 760 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="220" rx="8" fill="#F5F5F5"/>
+  <style>
+    .label { font: 700 18px Arial, sans-serif; fill: #333333; }
+    .caption { font: 500 13px Arial, sans-serif; fill: #666666; }
+    .circle { fill: #F3E9E9; stroke: #E8DADA; stroke-width: 1; }
+    .person { stroke: #B84242; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .mark { stroke: #B84242; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+
+  <g transform="translate(45 42)">
+    <circle class="circle" cx="44" cy="44" r="33"/>
+    <circle class="person" cx="44" cy="34" r="10"/>
+    <path class="person" d="M25 62c3.5-12 34.5-12 38 0"/>
+    <path class="mark" d="M68 18l10 10M78 18l-10 10"/>
+    <text class="label" x="0" y="112">1. 사람 + x</text>
+    <text class="caption" x="0" y="137">현재 초안 느낌</text>
+  </g>
+
+  <g transform="translate(225 42)">
+    <circle class="circle" cx="44" cy="44" r="33"/>
+    <circle class="person" cx="40" cy="34" r="10"/>
+    <path class="person" d="M21 62c3.5-12 34.5-12 38 0"/>
+    <path class="mark" d="M64 44h18"/>
+    <text class="label" x="0" y="112">2. 사람 + minus</text>
+    <text class="caption" x="0" y="137">덜 공격적</text>
+  </g>
+
+  <g transform="translate(405 42)">
+    <circle class="circle" cx="44" cy="44" r="33"/>
+    <circle class="person" cx="44" cy="34" r="10"/>
+    <path class="person" d="M25 62c3.5-12 34.5-12 38 0"/>
+    <circle class="mark" cx="72" cy="22" r="9"/>
+    <path class="mark" d="M66 28l12-12"/>
+    <text class="label" x="0" y="112">3. 사람 + 금지</text>
+    <text class="caption" x="0" y="137">계정 중지 느낌</text>
+  </g>
+
+  <g transform="translate(585 42)">
+    <circle class="circle" cx="44" cy="44" r="33"/>
+    <circle class="person" cx="37" cy="34" r="10"/>
+    <path class="person" d="M18 62c3.5-12 34.5-12 38 0"/>
+    <path class="mark" d="M65 31l14 14M79 31L65 45"/>
+    <text class="label" x="0" y="112">4. 사람 + 큰 x</text>
+    <text class="caption" x="0" y="137">탈퇴 의미 강함</text>
+  </g>
+</svg>

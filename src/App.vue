@@ -1,6 +1,8 @@
 <template>
-  <LayoutAuth v-if="isAuthPage" />
-  <LayoutDefault v-else />
+  <v-app theme="light">
+    <LayoutAuth v-if="isAuthPage" />
+    <LayoutDefault v-else />
+  </v-app>
 </template>
 
 <script setup>

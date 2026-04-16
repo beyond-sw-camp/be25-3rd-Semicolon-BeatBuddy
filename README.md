@@ -20,7 +20,7 @@
 
 **BeatBuddy**는 소속 집단 구성원들의 음악적 취향 데이터를 분석하여 정서적 공감대가 높은 동료를 연결해 주는 팀 빌딩 지원 플랫폼입니다.
 
-가입 시 최애곡 10곡을 선택하면, 곡의 음악적 특성을 분석하여 16차원 취향 벡터를 생성합니다. 같은 그룹에 속한 멤버들과 코사인 유사도를 계산해 취향이 비슷한 사람을 추천받고, 마음에 드는 상대에게 친구 신청을 보내 1:1 채팅으로 대화할 수 있습니다.
+가입 시 최애곡 10곡을 선택하면, 곡의 음악적 특성을 분석하여 16차원 취향 벡터를 생성합니다. 같은 그룹에 속한 멤버들과 유클리드 거리를 계산해 취향이 비슷한 사람을 추천받고, 마음에 드는 상대에게 친구 신청을 보내 1:1 채팅으로 대화할 수 있습니다.
 
 ---
 
@@ -57,7 +57,7 @@
 ### 👥 3. 그룹 기능
 - 그룹 생성
 - 초대 코드 기반 그룹 가입
-- 그룹 내 취향 기반 친구 추천 (코사인 유사도)
+- 그룹 내 취향 기반 친구 추천 (유클리드 거리)
 - 추천 프로필 조회 (넘기기 / 친구 신청)
 
 ### 🤝 4. 친구 기능
@@ -78,18 +78,7 @@
 
 ## 🔧 시스템 아키텍처
 
-```
-[Vue.js Frontend]
-       ↕ HTTP / WebSocket
-[Spring Boot Backend]
-       ↕ MyBatis
-[MariaDB Database]
-       
-[외부 API]
-- Spotify API : 곡 검색, 앨범 커버
-- SoundNet API : 음악 특성 데이터
-- Gmail SMTP : 이메일 인증
-```
+> <img width="6337" height="3477" alt="Web App Reference Architecture" src="https://github.com/user-attachments/assets/aa12a9b9-0a6d-4915-9db9-c88309f9b282" />
 
 ---
 
@@ -97,14 +86,14 @@
 
 | 구분 | 기술 |
 |------|------|
-| Frontend | Vue.js |
-| Backend | Spring Boot |
-| Database | MariaDB |
-| ORM | MyBatis |
-| 인증 | JWT |
-| 이메일 | Gmail SMTP |
-| 실시간 채팅 | WebSocket (STOMP) |
-| 외부 API | Spotify API, SoundNet API |
+| Frontend | ![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) |
+| Backend | ![SpringBoot](https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white) |
+| Database | ![MariaDB](https://img.shields.io/badge/MariaDB(MySQL)-003545?style=for-the-badge&logo=mariadb&logoColor=white) |
+| ORM | ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge) |
+| 인증 | ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) |
+| 이메일 | ![Gmail](https://img.shields.io/badge/GmailSMTP-EA4335?style=for-the-badge&logo=gmail&logoColor=white) |
+| 실시간 채팅 | ![WebSocket](https://img.shields.io/badge/WebSocket(STOMP)-010101?style=for-the-badge) |
+| 외부 API | ![Spotify](https://img.shields.io/badge/SpotifyAPI-1DB954?style=for-the-badge&logo=spotify&logoColor=white)&nbsp;![RapidAPI](https://img.shields.io/badge/RapidAPI-0055DA?style=for-the-badge&logo=rapid&logoColor=white) |
 
 
 ---
