@@ -117,7 +117,7 @@ onUnmounted(() => {
     const mainContent = document.querySelector('.main-content')
 
     if (header) header.style.display = ''
-    if (mainContent) mainContent.style.paddingTop = '64px'
+    if (mainContent) mainContent.style.paddingTop = ''
 })
 
 const goBack = () => {

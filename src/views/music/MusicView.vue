@@ -142,7 +142,7 @@ const updateHeaderVisibility = (hide) => {
     }
 
     if (mainContent) {
-        mainContent.style.paddingTop = hide ? '0' : '64px'
+        mainContent.style.paddingTop = hide ? '0' : ''
     }
 }
 
