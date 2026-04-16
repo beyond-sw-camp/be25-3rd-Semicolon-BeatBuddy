@@ -25,7 +25,7 @@
                 <div class="count-row">
                     <p class="count-text">선택된 곡: {{ musicStore.selectedCount }}/10</p>
 
-                    <span v-if="musicStore.isComplete" class="complete-badge">✓ 완료</span>
+                    <span v-if="musicStore.isComplete" class="complete-badge">✓</span>
                 </div>
             </div>
 
@@ -47,7 +47,7 @@
         <div class="content-section">
         <!-- 선택된 곡이 있으면 목록 표시 -->
         <div v-if="musicStore.selectedCount > 0" class="selected-section">
-            <h2 class="selected-title">선택된 곡 ({{ musicStore.selectedCount }}/10)</h2>
+            <!-- <h2 class="selected-title">선택된 곡 ({{ musicStore.selectedCount }}/10)</h2> -->
 
                 <div class="selected-list">
                     <div
@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMusicStore } from '@/stores/music';
 import { saveTaste, updateTaste } from '@/api/music';
@@ -103,6 +103,22 @@ const musicStore = useMusicStore()
 
 // 저장 중 상태
 const saving = ref(false)
+
+onMounted(() => {
+    const header = document.querySelector('.header')
+    const mainContent = document.querySelector('.main-content')
+
+    if (header) header.style.display = 'none'
+    if (mainContent) mainContent.style.paddingTop = '0'
+})
+
+onUnmounted(() => {
+    const header = document.querySelector('.header')
+    const mainContent = document.querySelector('.main-content')
+
+    if (header) header.style.display = ''
+    if (mainContent) mainContent.style.paddingTop = '64px'
+})
 
 const goBack = () => {
     musicStore.endEditMode()
@@ -164,7 +180,11 @@ const handleSave = async () => {
 
 <style scoped>
 .music-select-view {
-    height: calc(100dvh - 64px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 64px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -174,12 +194,12 @@ const handleSave = async () => {
 .top-fixed {
     flex-shrink: 0;
     background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
 }
 
 .top-section {
     padding: 28px 24px 20px;
     background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .top-bar {
@@ -191,8 +211,8 @@ const handleSave = async () => {
 
 .page-title {
     margin: 0;
-    font-size: 28px;
-    font-weight: 800;
+    font-size: 20px;
+    font-weight: 700;
     color: #111827;
 }
 
@@ -205,13 +225,17 @@ const handleSave = async () => {
 .text-button {
     border: none;
     background: none;
-    font-size: 16px;
+    font-size: 14px;
     color: #374151;
     cursor: pointer;
 }
 
 .save-button {
     min-width: 74px;
+}
+
+.save-button :deep(.v-btn__content) {
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -224,8 +248,9 @@ const handleSave = async () => {
 
 .count-text {
     margin: 0;
-    font-size: 18px;
+    font-size: 15px;
     color: #1f2937;
+    font-weight: 400;
 }
 
 .complete-badge {
@@ -370,5 +395,4 @@ const handleSave = async () => {
     line-height: 1.7;
     color: #9ca3af;
 }
-
 </style>
