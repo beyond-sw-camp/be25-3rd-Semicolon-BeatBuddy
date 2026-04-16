@@ -13,18 +13,6 @@ const router = createRouter({
         meta: { layout: 'default', title: '그룹' }
         },
         {
-        path: '/group/create',
-        name: 'group-create',
-        component: () => import('../views/group/GroupCreateView.vue'),
-        meta: { layout: 'default', title: '새 그룹 만들기', showBack: true }
-        },
-        {
-        path: '/group/join',
-        name: 'group-join',
-        component: () => import('../views/group/GroupJoinView.vue'),
-        meta: { layout: 'default', title: '초대 코드로 가입', showBack: true }
-        },
-        {
         path: '/chat',
         name: 'chat-list',
         component: () => import('../views/chat/ChatListView.vue'),
