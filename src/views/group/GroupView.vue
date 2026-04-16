@@ -10,22 +10,20 @@
         </v-toolbar>
 
         <!-- 그룹 목록 -->
-        <div style="flex: 1; overflow-y: auto;">
-            <GroupList
-                :groups="groups"
-                :loading="loading"
-                :edit-mode="editMode"
-                @leave="handleLeaveGroup"
-                @select="handleSelectGroup"
-            />
-        </div>
+        <GroupList
+            :groups="groups"
+            :loading="loading"
+            :edit-mode="editMode"
+            @leave="handleLeaveGroup"
+            @select="handleSelectGroup"
+        />
 
         <!-- 하단 버튼 -->
         <div class="bottom-buttons">
-            <v-btn block color="primary" rounded="lg" height="48" class="mb-4" @click="router.push('/group/create')">
+            <v-btn block color="primary" rounded="lg" height="52" class="mb-4" @click="router.push('/group/create')">
                 + 새 그룹 만들기
             </v-btn>
-            <v-btn block variant="outlined" color="primary" rounded="lg" height="48" class="mt-2" @click="router.push('/group/join')">
+            <v-btn block variant="outlined" color="primary" rounded="lg" height="52" class="mt-2" @click="router.push('/group/join')">
                 초대 코드로 가입하기
             </v-btn>
         </div>
@@ -33,13 +31,20 @@
         <!-- 추천 친구 다이얼로그 -->
         <v-dialog
             v-model="showRecommendDialog"
-            max-width="390"
+            fullscreen
+            transition="dialog-bottom-transition"
             @update:model-value="handleRecommendDialogUpdate"
         >
-            <v-card rounded="lg" class="dialog-card">
-                <v-card-title class="dialog-title">추천 친구</v-card-title>
-                <v-card-text>
-                    <div v-if="recommendLoading" class="center-box">
+            <v-card class="recommend-fullscreen-card">
+                <v-btn
+                    icon="mdi-close"
+                    variant="text"
+                    class="recommend-close-btn"
+                    aria-label="추천 친구 닫기"
+                    @click="closeRecommendDialog"
+                />
+                <v-card-text class="recommend-body">
+                    <div v-if="recommendLoading" class="center-box recommend-state">
                         <v-progress-circular indeterminate color="primary" />
                     </div>
                     <div v-else-if="sortedRecommendations.length === 0" class="empty-box recommend-empty">
@@ -51,70 +56,63 @@
                         <div class="recommend-counter">
                             {{ recommendationIndex + 1 }} / {{ sortedRecommendations.length }}
                         </div>
-                        <div class="member-card">
-                            <div class="card-avatar">
-                                <img
-                                    v-if="currentRecommendation.profileImageUrl"
-                                    :src="`${apiBaseUrl}${currentRecommendation.profileImageUrl}`"
-                                    class="avatar-img"
-                                />
-                                <span v-else class="mdi mdi-account avatar-icon" />
-                            </div>
-                            <h3 class="member-name">{{ currentRecommendation.nickname }}</h3>
-                            <div class="favorite-preview">
-                                <div v-if="getFavoriteSongs(currentRecommendation).length" class="album-grid">
-                                    <div
-                                        v-for="song in getFavoriteSongs(currentRecommendation)"
-                                        :key="song.musicId || song.trackId"
-                                        class="album-tile"
-                                        :title="song.trackName"
-                                        @click="openSongDetail(song)"
-                                    >
-                                        <img
-                                            v-if="song.albumCoverUrl || song.coverUrl"
-                                            :src="song.albumCoverUrl || song.coverUrl"
-                                            :alt="song.trackName"
-                                            class="album-cover"
-                                        />
-                                        <span v-else class="mdi mdi-music-note album-placeholder" />
+                        <div class="member-card" :style="{ backgroundImage: recommendationBackgroundImage }">
+                            <div class="member-overlay" />
+                            <div class="member-content">
+                                <h3 class="member-name">{{ currentRecommendation.nickname }}</h3>
+                                <div class="favorite-preview">
+                                    <div class="album-panel">
+                                        <div v-if="getFavoriteSongs(currentRecommendation).length" class="album-grid">
+                                            <div
+                                                v-for="song in getFavoriteSongs(currentRecommendation)"
+                                                :key="song.musicId || song.trackId"
+                                                class="album-tile"
+                                                :title="song.trackName"
+                                                @click="openSongDetail(song)"
+                                            >
+                                                <img
+                                                    v-if="song.albumCoverUrl || song.coverUrl"
+                                                    :src="song.albumCoverUrl || song.coverUrl"
+                                                    :alt="song.trackName"
+                                                    class="album-cover"
+                                                />
+                                                <span v-else class="mdi mdi-music-note album-placeholder" />
+                                            </div>
+                                        </div>
+                                        <p v-else class="favorite-empty">아직 선택한 곡이 없어요</p>
                                     </div>
                                 </div>
-                                <p v-else class="favorite-empty">아직 선택한 곡이 없어요</p>
+                                <div class="card-actions">
+                                    <v-btn
+                                        color="primary"
+                                        rounded="lg"
+                                        size="large"
+                                        class="friend-request-btn"
+                                        :loading="requestLoadingUserId === currentRecommendation.userId"
+                                        :disabled="skipLoadingUserId != null"
+                                        @click="sendRequest(currentRecommendation)"
+                                    >
+                                        <v-icon start>mdi-account-plus</v-icon>
+                                        친구 신청
+                                    </v-btn>
+                                    <v-btn
+                                        color="grey"
+                                        variant="tonal"
+                                        rounded="lg"
+                                        size="large"
+                                        class="skip-btn"
+                                        :loading="skipLoadingUserId === currentRecommendation.userId"
+                                        :disabled="requestLoadingUserId != null"
+                                        @click="skip(currentRecommendation)"
+                                    >
+                                        넘기기
+                                    </v-btn>
+                                </div>
+                                <p class="error-msg" v-if="actionErrorUserId === currentRecommendation.userId">{{ actionError }}</p>
                             </div>
-                            <div class="card-actions">
-                                <v-btn
-                                    color="primary"
-                                    rounded="xl"
-                                    size="large"
-                                    class="friend-request-btn"
-                                    :loading="requestLoadingUserId === currentRecommendation.userId"
-                                    :disabled="skipLoadingUserId != null"
-                                    @click="sendRequest(currentRecommendation)"
-                                >
-                                    <v-icon start>mdi-account-plus</v-icon>
-                                    친구 신청
-                                </v-btn>
-                                <v-btn
-                                    color="grey"
-                                    variant="tonal"
-                                    rounded="xl"
-                                    size="large"
-                                    class="skip-btn"
-                                    :loading="skipLoadingUserId === currentRecommendation.userId"
-                                    :disabled="requestLoadingUserId != null"
-                                    @click="skip(currentRecommendation)"
-                                >
-                                    넘기기
-                                </v-btn>
-                            </div>
-                            <p class="error-msg" v-if="actionErrorUserId === currentRecommendation.userId">{{ actionError }}</p>
                         </div>
                     </div>
                 </v-card-text>
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn variant="text" @click="closeRecommendDialog">닫기</v-btn>
-                </v-card-actions>
             </v-card>
         </v-dialog>
 
@@ -157,7 +155,7 @@ import { useFriendStore } from '@/stores/friendStore'
 const router = useRouter()
 const groupStore = useGroupStore()
 const friendStore = useFriendStore()
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 // 기본 상태
 const loading = ref(false)
@@ -191,9 +189,26 @@ const currentRecommendation = computed(
     () => sortedRecommendations.value[recommendationIndex.value] || {}
 )
 
+const recommendationBackgroundImage = computed(() => {
+    const imageUrl = currentRecommendation.value?.profileImageUrl
+        ? resolveImageUrl(currentRecommendation.value.profileImageUrl)
+        : resolveImageUrl('/default-profile.jpg')
+    return `url("${imageUrl}")`
+})
+
 // 유틸 함수
 function getFavoriteSongs(member) {
-    return member?.favoriteMusicList || member?.favoriteSongs || []
+    return member?.favoriteMusicList
+        || member?.favoriteSongs
+        || member?.favoriteMusics
+        || member?.topSongs
+        || []
+}
+
+function resolveImageUrl(url) {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url
+    return `${apiBaseUrl}${url.startsWith('/') ? url : `/${url}`}`
 }
 
 function hasCompleteFavoriteSongs(member) {
@@ -318,11 +333,6 @@ onMounted(() => {
 <style scoped>
 .group-page {
     padding: 8px 16px;
-    height: 100%;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
 }
 
 .section-title {
@@ -341,60 +351,71 @@ onMounted(() => {
 /* 추천 친구 다이얼로그 스타일 */
 .recommend-card-wrap {
     width: 100%;
-    max-width: 360px;
-    max-height: 100%;
-    overflow-y: auto;
+    max-width: 430px;
+    height: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 2px 0 16px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .recommend-counter {
-    align-self: center;
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    z-index: 3;
+    transform: translateX(-50%);
     font-size: 12px;
     font-weight: 700;
-    color: var(--color-text-secondary);
-    background: var(--color-background);
+    color: #fff;
+    background: rgba(0, 0, 0, 0.34);
     border-radius: 8px;
     padding: 4px 10px;
-    margin-bottom: 10px;
+    backdrop-filter: blur(10px);
 }
 
 .member-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 28px 20px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(108, 99, 255, 0.15);
-}
-
-.card-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: #ede9ff;
-    margin: 0 auto 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.avatar-img {
-    width: 100%;
+    position: relative;
     height: 100%;
-    object-fit: cover;
+    min-height: 100vh;
+    background-color: #111;
+    background-position: center;
+    background-size: cover;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    text-align: left;
 }
 
-.avatar-icon {
-    font-size: 48px;
-    color: var(--color-primary);
+.member-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.08) 0%,
+        rgba(0, 0, 0, 0.28) 46%,
+        rgba(0, 0, 0, 0.82) 100%
+    );
+}
+
+.member-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 0 18px 34px;
 }
 
 .member-name {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-text-primary);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #fff;
+    text-align: left;
+    word-break: break-word;
 }
 
 .favorite-preview {
@@ -405,14 +426,22 @@ onMounted(() => {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 6px;
-    max-width: 230px;
+    max-width: 260px;
     margin: 0 auto;
+}
+
+.album-panel {
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(14px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 .album-tile {
     aspect-ratio: 1;
     border-radius: 8px;
-    background: #ede9ff;
+    background: rgba(255, 255, 255, 0.18);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -428,17 +457,16 @@ onMounted(() => {
 
 .album-placeholder {
     font-size: 20px;
-    color: var(--color-primary);
+    color: rgba(255, 255, 255, 0.88);
 }
 
 .favorite-empty {
     font-size: 12px;
-    color: var(--color-text-secondary);
-    background: #f7f6ff;
-    border-radius: 8px;
-    padding: 10px 12px;
-    max-width: 230px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 2px 0;
+    max-width: 260px;
     margin: 0 auto;
+    text-align: center;
 }
 
 /* 곡 상세 다이얼로그 스타일 */
@@ -493,6 +521,7 @@ onMounted(() => {
     align-items: center;
     gap: 12px;
     margin-bottom: 4px;
+    flex-wrap: wrap;
 }
 
 .friend-request-btn {
@@ -537,6 +566,36 @@ onMounted(() => {
 
 .dialog-card {
     padding: 8px;
+}
+
+.recommend-fullscreen-card {
+    position: relative;
+    height: 100vh;
+    background: #111;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.recommend-body {
+    height: 100%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.recommend-state {
+    height: 100%;
+    align-items: center;
+}
+
+.recommend-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
 }
 
 .dialog-title {
