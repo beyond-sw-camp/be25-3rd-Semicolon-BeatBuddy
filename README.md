@@ -93,6 +93,49 @@
 
 ---
 
+## 🖥 화면 및 기능 설계서
+
+> [화면 및 기능 설계서](https://www.figma.com/board/daSTynfA5bNxs7zU00zo6I/flow-chart?t=ePHmKATAdPWGXzb6-1)
+
+<details>
+<summary>회원 관리</summary>
+<img width="4482" height="2642" alt="BeatBuddy 화면설계서 (1)" src="https://github.com/user-attachments/assets/c681f270-19f1-4081-8cd7-a404a28fc52d" />
+</details>
+
+<details>
+<summary>그룹</summary>
+<img width="4482" height="2794" alt="BeatBuddy 화면설계서 (2)" src="https://github.com/user-attachments/assets/272c93a9-c80b-44a8-b915-2b49d9bd7e37" />
+</details>
+
+<details>
+<summary>음악</summary>
+<img width="4490" height="3077" alt="BeatBuddy 화면설계서 (3)" src="https://github.com/user-attachments/assets/9010f5a6-956e-44a4-8c29-872238c08078" />
+</details>
+
+<details>
+<summary>친구</summary>
+<img width="3474" height="2650" alt="BeatBuddy 화면설계서 (4)" src="https://github.com/user-attachments/assets/f9d4605f-c5c7-464b-a614-2b55f7086f1f" />
+</details>
+
+<details>
+<summary>채팅</summary>
+<img width="3474" height="1411" alt="BeatBuddy 화면설계서 (5)" src="https://github.com/user-attachments/assets/aa5284f3-6278-4508-a853-e18171991d07" />
+</details>
+
+<details>
+<summary>마이페이지</summary>
+<img width="3474" height="4465" alt="BeatBuddy 화면설계서 (6)" src="https://github.com/user-attachments/assets/a9fbde85-5a8f-4237-bc21-8a0594b51ea1" />
+</details>
+
+
+
+
+
+---
+
+
+---
+
 ## 🛠️ 기술 스택
 
 | 구분 | 기술 |
