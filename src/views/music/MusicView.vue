@@ -159,14 +159,28 @@ watch(hasTaste, (value) => {
 // })
 
 // 배경 이미지 계산
-const heroBackground = computed(() => {
-    const image = profileImageUrl.value
-        ? `http://localhost:8088${profileImageUrl.value}`
-        : 'http://localhost:8088/default-profile.jpg'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
+const DEFAULT_PROFILE_IMAGE = '${API_BASE_URL}/default-profile.jpg'
+
+const resolvedProfileImageUrl = computed(() => {
+    const image = profileImageUrl.value
+
+    if (!image) {
+        return DEFAULT_PROFILE_IMAGE
+    }
+
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+        return image
+    }
+
+    return `${API_BASE_URL}${image}`
+})
+
+const heroBackground = computed(() => {
     return `
         linear-gradient(rgba(32, 16, 64, 0.72), rgba(18, 7, 38, 0.88)),
-        url(${image})
+        url(${resolvedProfileImageUrl.value})
     `
 })
 
@@ -259,11 +273,9 @@ onUnmounted(() => {
 
 <style scoped>
 .music-view {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 64px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: #f7f7fb;
     overflow: hidden;
 }
