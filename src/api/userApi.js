@@ -34,6 +34,10 @@ export const updateProfileImage = (payload) => {
   return api.patch(`${USER_BASE_URL}/me/profile-image`, payload)
 }
 
+export const deleteProfileImage = () => {
+  return api.delete(`${USER_BASE_URL}/me/profile-image`)
+}
+
 export const withdraw = () => {
   return api.delete(`${USER_BASE_URL}/me`)
 }

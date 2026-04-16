@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="mypage">
     <v-alert
       v-if="userStore.errorMessage"
@@ -80,6 +80,15 @@
           </v-btn>
         </v-card-text>
         <v-card-actions>
+          <v-btn
+            v-if="canDeleteProfileImage"
+            color="error"
+            variant="text"
+            :loading="savingProfileImage"
+            @click="handleDeleteProfileImage"
+          >
+            삭제
+          </v-btn>
           <v-spacer />
           <v-btn variant="text" @click="profileImageDialog = false">
             취소
@@ -110,7 +119,7 @@
               <v-avatar size="40">
                 <v-img
                   v-if="group.groupImageUrl"
-                  :src="group.groupImageUrl"
+                  :src="resolveImageUrl(group.groupImageUrl)"
                   alt="그룹 이미지"
                 />
                 <v-icon v-else icon="mdi-account-group" />
@@ -265,6 +274,14 @@
       <v-card class="dialog-card password-dialog-card" elevation="0">
         <v-card-title>비밀번호 변경</v-card-title>
         <v-card-text>
+          <v-alert
+            v-if="passwordStatusMessage"
+            class="mb-4"
+            :type="passwordStatusType"
+            variant="tonal"
+          >
+            {{ passwordStatusMessage }}
+          </v-alert>
           <div class="password-input-group">
             <label class="password-field-label" for="current-password">
               현재 비밀번호
@@ -442,6 +459,8 @@ const withdrawConfirmFocused = ref(false)
 const showCurrentPassword = ref(false)
 const showNewPassword = ref(false)
 const showNewPasswordConfirm = ref(false)
+const passwordStatusMessage = ref('')
+const passwordStatusType = ref('success')
 
 const passwordForm = reactive({
   currentPassword: '',
@@ -457,6 +476,9 @@ const displayName = computed(() => profile.value.nickname || '내 프로필')
 const profileEmail = computed(() => profile.value.email || '')
 const profileImage = computed(() => {
   return profile.value.profileImageUrl || profile.value.profileImage || profile.value.imageUrl || ''
+})
+const canDeleteProfileImage = computed(() => {
+  return Boolean(profileImage.value) && profileImage.value !== '/default-profile.jpg'
 })
 const resolvedProfileImage = computed(() => resolveImageUrl(profileImage.value))
 const profileImagePreview = computed(() => {
@@ -553,7 +575,7 @@ const openProfileImageDialog = () => {
 }
 
 const handleUpdateProfileImage = async () => {
-  if (!profileImageUrl.value.trim()) {
+  if (!profileImageFile.value) {
     userStore.errorMessage = '프로필 이미지를 먼저 선택해 주세요.'
     return
   }
@@ -563,9 +585,10 @@ const handleUpdateProfileImage = async () => {
   userStore.errorMessage = ''
 
   try {
-    await userStore.updateMyProfileImage({
-      profileImageUrl: profileImageUrl.value.trim(),
-    })
+    const formData = new FormData()
+    formData.append('profileImage', profileImageFile.value)
+
+    await userStore.updateMyProfileImage(formData)
     profileImageFile.value = null
     profileImageUrl.value = ''
     profileImageDialog.value = false
@@ -573,6 +596,24 @@ const handleUpdateProfileImage = async () => {
   } catch {
     successMessage.value = ''
     // userStore.errorMessage is rendered in the alert above.
+  } finally {
+    savingProfileImage.value = false
+  }
+}
+
+const handleDeleteProfileImage = async () => {
+  savingProfileImage.value = true
+  successMessage.value = ''
+  userStore.errorMessage = ''
+
+  try {
+    await userStore.deleteMyProfileImage()
+    profileImageFile.value = null
+    profileImageUrl.value = ''
+    profileImageDialog.value = false
+    successMessage.value = '프로필 이미지가 기본 이미지로 변경되었습니다.'
+  } catch {
+    successMessage.value = ''
   } finally {
     savingProfileImage.value = false
   }
@@ -618,12 +659,16 @@ const handleUpdateGroupNickname = async (group) => {
 
 const openPasswordDialog = () => {
   passwordDialog.value = true
+  passwordStatusMessage.value = ''
+  passwordStatusType.value = 'success'
   successMessage.value = ''
   userStore.errorMessage = ''
 }
 
 const closePasswordDialog = () => {
   passwordDialog.value = false
+  passwordStatusMessage.value = ''
+  passwordStatusType.value = 'success'
   passwordForm.currentPassword = ''
   passwordForm.newPassword = ''
   passwordForm.newPasswordConfirm = ''
@@ -634,6 +679,8 @@ const closePasswordDialog = () => {
 
 const handleChangePassword = async () => {
   savingPassword.value = true
+  passwordStatusMessage.value = ''
+  passwordStatusType.value = 'success'
   successMessage.value = ''
   userStore.errorMessage = ''
 
@@ -649,9 +696,12 @@ const handleChangePassword = async () => {
     showCurrentPassword.value = false
     showNewPassword.value = false
     showNewPasswordConfirm.value = false
-    passwordDialog.value = false
+    passwordStatusMessage.value = '비밀번호가 변경되었습니다.'
+    passwordStatusType.value = 'success'
     successMessage.value = '비밀번호가 변경되었습니다.'
   } catch {
+    passwordStatusMessage.value = userStore.errorMessage || '비밀번호 변경에 실패했습니다.'
+    passwordStatusType.value = 'error'
     successMessage.value = ''
     // userStore.errorMessage is rendered in the alert above.
   } finally {
@@ -672,7 +722,7 @@ const handleLogout = async () => {
     // 서버 에러나도 어차피 로그아웃은 시켜야 함
   }
   authStore.logout()           // 2. localStorage 정리
-  router.replace('/auth')
+  router.replace('/login')
 }
 
 const openWithdrawDialog = () => {
@@ -697,7 +747,7 @@ const handleWithdraw = async () => {
   try {
     await userStore.withdrawMe()
     closeWithdrawDialog()
-    router.push('/auth')
+    router.push('/login')
   } finally {
     withdrawing.value = false
   }

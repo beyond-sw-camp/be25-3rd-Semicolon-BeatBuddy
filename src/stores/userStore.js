@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import {
   changePassword,
+  deleteProfileImage,
   getMyGroupNicknames,
   getMyNotificationSetting,
   getMyProfile,
@@ -114,6 +115,18 @@ export const useUserStore = defineStore('user', {
 
       try {
         await updateProfileImage(payload)
+        await this.fetchMyProfile()
+      } catch (error) {
+        this.setError(error)
+        throw error
+      }
+    },
+
+    async deleteMyProfileImage() {
+      this.errorMessage = ''
+
+      try {
+        await deleteProfileImage()
         await this.fetchMyProfile()
       } catch (error) {
         this.setError(error)
