@@ -140,11 +140,7 @@ const selectTrack = (track) => {
 
 <style scoped>
 .music-search-view {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 64px;
-    bottom: 64px;
+    height: 100%;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
