@@ -22,40 +22,57 @@ api.interceptors.request.use((config) => {
     return config
 })
 
+let isRefreshing = false
+let waitQueue = []
+
 // 응답 인터셉터
 api.interceptors.response.use(
-    (response) => response,  // 성공이면 그냥 통과
+    (response) => response,
 
     async (error) => {
         const authStore = useAuthStore()
-        const originalRequest = error.config // 실패한 요청의 원본 설정
+        const originalRequest = error.config
 
-        // 로그인/회원가입 요청은 인터셉터 건너뜀
         if (originalRequest.url.includes('/auth/')) {
             return Promise.reject(error)
         }
-        // 401 에러 && 재시도 안 한 요청이면
-        // 401: Access Token 만료됐다는 뜻
-        // _retry: 재시도 플래그
+
         if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true  // 무한루프 방지
+            originalRequest._retry = true
+
+            // 이미 refresh 중이면 큐에서 대기
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    waitQueue.push({ resolve, reject })
+                }).then(newToken => {
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`
+                    return api(originalRequest)
+                })
+            }
+
+            // refresh 시작
+            isRefreshing = true
 
             try {
-                // Refresh Token으로 새 Access Token 발급
                 const response = await api.post('/api/v1/auth/token/refresh')
                 const newToken = response.data.result.accessToken
 
-                // 새 토큰 저장
                 authStore.setToken(newToken)
 
-                // 실패했던 요청 새 토큰으로 재시도
+                // 대기 중이던 요청들 전부 새 토큰으로 풀어줌
+                waitQueue.forEach(({ resolve }) => resolve(newToken))
+                waitQueue = []
+
                 originalRequest.headers.Authorization = `Bearer ${newToken}`
                 return api(originalRequest)
 
             } catch (e) {
-                // Refresh Token도 만료됐으면 로그아웃
+                waitQueue.forEach(({ reject }) => reject(e))
+                waitQueue = []
                 authStore.logout()
                 window.location.href = '/login'
+            } finally {
+                isRefreshing = false  // 무조건 초기화
             }
         }
 
