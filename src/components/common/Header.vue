@@ -1,12 +1,21 @@
 <template>
     <header class="header">
+        <v-btn
+            v-if="route.meta.showBack"
+            icon="mdi-arrow-left"
+            variant="text"
+            color="var(--color-text-primary)"
+            size="small"
+            @click="router.back()"
+        />
         <span class="title">{{ route.meta.title }}</span>
     </header>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
+const router = useRouter()
 </script>
 
 <style scoped>
