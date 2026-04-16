@@ -2,19 +2,18 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
+import api from '@/api/axios'
 import { useAuthStore } from '@/stores/authStore'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, '')
 const WS_BASE_URL = (import.meta.env.VITE_WS_BASE_URL ?? API_BASE_URL).replace(/\/$/, '')
 
-const buildError = async (res, fallbackMessage) => {
-  try {
-    const data = await res.json()
-    const detail = data?.message ?? data?.error ?? data?.status
-    return new Error(detail ? `${fallbackMessage}: ${detail}` : fallbackMessage)
-  } catch {
-    return new Error(fallbackMessage)
-  }
+const TOKEN_REFRESH_BUFFER_SECONDS = 60
+
+const buildApiError = (error, fallbackMessage) => {
+  const data = error.response?.data
+  const detail = data?.message ?? data?.error ?? data?.status
+  return new Error(detail ? `${fallbackMessage}: ${detail}` : fallbackMessage)
 }
 
 const decodeJwtPayload = (token) => {
@@ -51,6 +50,7 @@ export const useChatStore = defineStore('chat', () => {
   let stompClient = null
   let roomSubscription = null
   let eventSubscription = null
+  let isConnecting = false
 
   const isConnected = ref(false)
   const rooms = ref([])
@@ -61,40 +61,49 @@ export const useChatStore = defineStore('chat', () => {
   const exitRoomError = '채팅방 나가기에 실패했습니다'
   const createRoomError = '채팅방 생성에 실패했습니다'
 
+  const shouldRefreshToken = () => {
+    const payload = decodeJwtPayload(authStore.token)
+    if (!payload?.exp) return false
+
+    const expiresAt = Number(payload.exp) * 1000
+    return expiresAt <= Date.now() + TOKEN_REFRESH_BUFFER_SECONDS * 1000
+  }
+
+  const refreshAccessToken = async () => {
+    const response = await api.post('/api/v1/auth/token/refresh')
+    const newToken = response.data?.result?.accessToken
+
+    if (newToken) {
+      authStore.setToken(newToken)
+    }
+
+    return newToken ?? authStore.token
+  }
+
+  const ensureFreshAccessToken = async () => {
+    if (!authStore.token) return null
+    if (!shouldRefreshToken()) return authStore.token
+    return refreshAccessToken()
+  }
+
   const loadRooms = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/chat/rooms`, {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      })
-
-      if (!res.ok) {
-        throw await buildError(res, loadRoomsError)
-      }
-
-      const data = await res.json()
+      const { data } = await api.get('/api/v1/chat/rooms')
       rooms.value = data.result ?? []
     } catch (error) {
       console.error(error)
-      throw error
+      throw buildApiError(error, loadRoomsError)
     }
   }
 
   const loadMessages = async (roomId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/chat/${roomId}/messages`, {
-        headers: { Authorization: `Bearer ${getAccessToken()}` },
-      })
-
-      if (!res.ok) {
-        throw await buildError(res, loadMessagesError)
-      }
-
-      const data = await res.json()
+      const { data } = await api.get(`/api/v1/chat/${roomId}/messages`)
       messages.value = data.result?.messages ?? []
       isOpponentExited.value = data.result?.opponentExited ?? false
     } catch (error) {
       console.error(error)
-      throw error
+      throw buildApiError(error, loadMessagesError)
     }
   }
 
@@ -149,40 +158,41 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   const exitRoom = async (roomId) => {
-    const res = await fetch(`${API_BASE_URL}/api/v1/chat/${roomId}/exit`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${getAccessToken()}` },
-    })
-
-    if (!res.ok) {
-      throw await buildError(res, exitRoomError)
+    try {
+      await api.patch(`/api/v1/chat/${roomId}/exit`)
+      unsubscribeRoom()
+      await loadRooms()
+    } catch (error) {
+      console.error(error)
+      throw buildApiError(error, exitRoomError)
     }
-
-    unsubscribeRoom()
-    await loadRooms()
   }
 
   const createRoom = async (opponentUserId) => {
-    const res = await fetch(`${API_BASE_URL}/api/v1/chat/rooms`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-      body: JSON.stringify({ opponentUserId }),
-    })
-
-    if (!res.ok) {
-      throw await buildError(res, createRoomError)
+    try {
+      const { data } = await api.post('/api/v1/chat/rooms', { opponentUserId })
+      await loadRooms()
+      return data.result
+    } catch (error) {
+      console.error(error)
+      throw buildApiError(error, createRoomError)
     }
-
-    const data = await res.json()
-    await loadRooms()
-    return data.result
   }
 
-  const connect = () => {
-    if (!getAccessToken() || stompClient?.active || stompClient?.connected) return
+  const connect = async () => {
+    if (!getAccessToken() || isConnecting || stompClient?.active || stompClient?.connected) return
+
+    isConnecting = true
+
+    try {
+      await ensureFreshAccessToken()
+    } catch (error) {
+      console.error(error)
+      authStore.logout()
+      window.location.href = '/login'
+      isConnecting = false
+      return
+    }
 
     const socket = new SockJS(`${WS_BASE_URL}/ws/chat`)
     stompClient = new Client({
@@ -216,6 +226,7 @@ export const useChatStore = defineStore('chat', () => {
     })
 
     stompClient.activate()
+    isConnecting = false
   }
 
   const disconnect = async () => {
