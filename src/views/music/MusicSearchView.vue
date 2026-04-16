@@ -1,10 +1,6 @@
 <template>
     <div class="music-search-view">
         <div class="top-fixed">
-            <div class="top-bar">
-                <button class="back-button" @click="goBack">←</button>
-                <h1 class="page-title">곡 검색</h1>
-            </div>
 
             <div class="search-box">
                 <v-icon class="search-icon">mdi-magnify</v-icon>
@@ -16,8 +12,6 @@
                     @keyup.enter="handleSearch"
                 />
             </div>
-
-            <div class="divider"></div>
         </div>
 
         <div class="content-section">
@@ -107,11 +101,6 @@ const loading = ref(false)
 const searched = ref(false)
 const errorMessage = ref('')
 
-
-const goBack = () => {
-    router.push('/music/select')
-}
-
 const handleSearch = async () => {
     const trimmedKeyword = keyword.value.trim()
 
@@ -151,7 +140,11 @@ const selectTrack = (track) => {
 
 <style scoped>
 .music-search-view {
-    height: calc(100dvh - 64px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 64px;
+    bottom: 64px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -163,34 +156,9 @@ const selectTrack = (track) => {
     background-color: #ffffff;
 }
 
-.top-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 24px 24px 20px;
-}
-
-.back-button {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background: #f3f4f6;
-    font-size: 22px;
-    cursor: pointer;
-    color: #111827;
-}
-
-.page-title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    color: #111827;
-}
-
 .search-box {
     position: relative;
-    margin: 0 24px 20px;
+    margin: 16px 24px 20px;
 }
 
 .search-icon {
@@ -225,11 +193,6 @@ const selectTrack = (track) => {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
     background-color: #ffffff;
-}
-
-.divider {
-    width: 100%;
-    border-bottom: 1px solid #e5e7eb;
 }
 
 .content-section {
