@@ -43,6 +43,18 @@ const router = createRouter({
         meta: { layout: 'default', title: '친구' }
         },
         {
+        path: '/friend/notifications',
+        name: 'friend-notifications',
+        component: () => import('../views/friend/NotificationView.vue'),
+        meta: { layout: 'default', title: '알림', showBack: true }
+        },
+        {
+        path: '/friend/:friendId',
+        name: 'friend-profile',
+        component: () => import('../views/friend/FriendProfileView.vue'),
+        meta: { layout: 'default', title: '친구 프로필', showBack: true }
+        },
+        {
         path: '/music',
         name: 'music',
         component: () => import('../views/music/MusicView.vue'),
