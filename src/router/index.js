@@ -130,21 +130,21 @@ router.beforeEach((to) => {
     }
 })
 
-router.beforeEach((to) => {
-  const isAuthenticated = Boolean(localStorage.getItem('accessToken'))
+// router.beforeEach((to) => {
+//   const isAuthenticated = Boolean(localStorage.getItem('accessToken'))
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return {
-      path: '/auth',
-      query: { redirect: to.fullPath },
-    }
-  }
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+//     return {
+//       path: '/auth',
+//       query: { redirect: to.fullPath },
+//     }
+//   }
 
-  if (to.meta.guestOnly && isAuthenticated) {
-    return '/mypage'
-  }
+//   if (to.meta.guestOnly && isAuthenticated) {
+//     return '/mypage'
+//   }
 
-  return true
-})
+//   return true
+// })
 
 export default router
