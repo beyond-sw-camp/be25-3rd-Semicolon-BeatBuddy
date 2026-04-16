@@ -8,6 +8,7 @@
                         v-model="inviteCode"
                         label="초대 코드 *"
                         variant="outlined"
+                        bg-color="#f5f5f5"
                         density="comfortable"
                         persistent-placeholder
                         :rules="inviteCodeRules"
@@ -20,6 +21,7 @@
                         v-model="groupNickname"
                         label="닉네임 *"
                         variant="outlined"
+                        bg-color="#f5f5f5"
                         density="comfortable"
                         persistent-placeholder
                         :rules="nicknameRules"
@@ -220,6 +222,7 @@ const goHome = () => {
     flex-direction: column;
     justify-content: center;
     gap: 16px;
+    background: #fff;
 }
 
 .form-box {

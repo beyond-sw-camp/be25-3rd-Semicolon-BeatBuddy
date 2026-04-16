@@ -10,20 +10,22 @@
         </v-toolbar>
 
         <!-- 그룹 목록 -->
-        <GroupList
-            :groups="groups"
-            :loading="loading"
-            :edit-mode="editMode"
-            @leave="handleLeaveGroup"
-            @select="handleSelectGroup"
-        />
+        <div style="flex: 1; overflow-y: auto;">
+            <GroupList
+                :groups="groups"
+                :loading="loading"
+                :edit-mode="editMode"
+                @leave="handleLeaveGroup"
+                @select="handleSelectGroup"
+            />
+        </div>
 
         <!-- 하단 버튼 -->
         <div class="bottom-buttons">
-            <v-btn block color="primary" rounded="lg" height="52" class="mb-4" @click="router.push('/group/create')">
+            <v-btn block color="primary" rounded="lg" height="48" class="mb-4" @click="router.push('/group/create')">
                 + 새 그룹 만들기
             </v-btn>
-            <v-btn block variant="outlined" color="primary" rounded="lg" height="52" class="mt-2" @click="router.push('/group/join')">
+            <v-btn block variant="outlined" color="primary" rounded="lg" height="48" class="mt-2" @click="router.push('/group/join')">
                 초대 코드로 가입하기
             </v-btn>
         </div>
@@ -316,6 +318,11 @@ onMounted(() => {
 <style scoped>
 .group-page {
     padding: 8px 16px;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .section-title {

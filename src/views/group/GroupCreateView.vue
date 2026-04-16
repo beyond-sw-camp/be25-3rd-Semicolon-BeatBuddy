@@ -1,7 +1,7 @@
 <template>
     <div class="create-page">
         <div class="image-upload">
-            <v-avatar size="100" color="surface-variant">
+            <v-avatar size="100" color="#f0f0f0">
                 <v-img v-if="previewImage" :src="previewImage" cover />
                 <v-icon v-else icon="mdi-account-group" size="48" color="secondary" />
             </v-avatar>
@@ -27,7 +27,7 @@
                     ref="groupNameField"
                     v-model="form.groupName"
                     label="그룹명 *"
-                    placeholder="중복되지 않는 그룹 명칭 (최대 20자)"
+                    placeholder="  중복되지 않는 그룹 명칭 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
@@ -41,7 +41,7 @@
                 <v-text-field
                     v-model="form.groupNickname"
                     label="닉네임 *"
-                    placeholder="그룹 내에서 사용할 닉네임 (최대 20자)"
+                    placeholder="  그룹 내에서 사용할 닉네임 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
@@ -54,7 +54,7 @@
                 <v-text-field
                     v-model="form.description"
                     label="한 줄 소개"
-                    placeholder="그룹 메인에 노출될 소개글 (최대 50자)"
+                    placeholder="  그룹 메인에 노출될 소개글 (최대 50자)"
                     maxlength="50"
                     counter
                     variant="outlined"
@@ -67,7 +67,7 @@
                     ref="inviteCodeField"
                     v-model="form.inviteCode"
                     label="초대 코드 *"
-                    placeholder="그룹 초대 코드 (최대 20자)"
+                    placeholder="  그룹 초대 코드 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
@@ -312,6 +312,8 @@ const goHome = () => {
 <style scoped>
 .create-page {
     padding: 24px 16px;
+    background: #fff;
+    min-height: 100%;
 }
 
 .image-upload {

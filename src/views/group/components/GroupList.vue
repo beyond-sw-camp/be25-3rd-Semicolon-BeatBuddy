@@ -16,7 +16,9 @@
             rounded="lg"
             border
             flat
-            style="display: flex; overflow: hidden;"
+            :ripple="false"
+            color="#fff"
+            style="display: flex; overflow: hidden; border: 1px solid #e0e0e0 !important;"
             @click="selectGroup(group)"
         >
             <div class="group-item">
