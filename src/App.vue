@@ -16,7 +16,6 @@ import { useFriendStore } from '@/stores/friendStore'
 const route = useRoute()
 const authStore = useAuthStore()
 const friendStore = useFriendStore()
-const { connect, disconnect } = useWebSocket()
 let notificationPoller = null
 
 const isAuthPage = computed(() => route.meta.layout === 'auth')

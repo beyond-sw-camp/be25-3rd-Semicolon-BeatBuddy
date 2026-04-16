@@ -51,7 +51,7 @@
           @click="openProfile(friend)"
         >
           <div class="friend-avatar">
-            <img v-if="friend.profileImageUrl" :src="friend.profileImageUrl" class="avatar-img" />
+            <img v-if="friend.profileImageUrl" :src="resolveImageUrl(friend.profileImageUrl)" class="avatar-img" />
             <span v-else class="mdi mdi-account avatar-icon" />
           </div>
           <div class="friend-info">
@@ -66,7 +66,7 @@
       <v-card v-if="selectedFriend" rounded="xl" class="profile-card">
         <div class="profile-header">
           <div class="profile-avatar">
-            <img v-if="selectedFriend.profileImageUrl" :src="selectedFriend.profileImageUrl" class="avatar-img" />
+            <img v-if="selectedFriend.profileImageUrl" :src="resolveImageUrl(selectedFriend.profileImageUrl)" class="avatar-img" />
             <span v-else class="mdi mdi-account avatar-icon-lg" />
           </div>
           <h3>{{ selectedFriend.nickname }}</h3>
@@ -155,7 +155,7 @@
                 <div class="notif-avatar">
                   <img
                     v-if="getNotificationSenderProfileImage(notif)"
-                    :src="getNotificationSenderProfileImage(notif)"
+                    :src="resolveImageUrl(getNotificationSenderProfileImage(notif))"
                     class="avatar-img"
                   />
                   <span v-else class="mdi mdi-account avatar-icon" />
@@ -188,7 +188,7 @@
                 <div class="notif-avatar">
                   <img
                     v-if="getAcceptedFriendProfileImage(notif)"
-                    :src="getAcceptedFriendProfileImage(notif)"
+                    :src="resolveImageUrl(getAcceptedFriendProfileImage(notif))"
                     class="avatar-img"
                   />
                   <span v-else class="mdi mdi-account-check avatar-icon" />
@@ -267,6 +267,7 @@ const deletingFriend = ref(null)
 const notifLoading = ref(null)
 const chatLoadingFriendId = ref(null)
 const chatError = ref('')
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const friendRequestNotifications = computed(() => {
   const existingRequestKeys = new Set(
@@ -309,11 +310,11 @@ const filteredFriends = computed(() => {
 })
 
 const profileAlbumSlots = computed(() => {
-  return selectedFriend.value?.favoriteMusicList?.slice(0, 10) || []
+  return getFavoriteSongs(selectedFriend.value).slice(0, 10)
 })
 
 const profileFavoriteNotice = computed(() => {
-  const count = selectedFriend.value?.favoriteMusicList?.length || 0
+  const count = getFavoriteSongs(selectedFriend.value).length
   if (count < 10) return '최애곡 10곡을 아직 선택하지 않았어요'
   return ''
 })
@@ -344,14 +345,21 @@ async function openProfile(friend) {
   selectedSong.value = null
   showProfile.value = true
   profileError.value = ''
+  const friendId = getFriendUserId(friend)
+  if (!friendId) {
+    profileError.value = '친구 정보를 확인할 수 없습니다.'
+    return
+  }
   profileLoading.value = true
   try {
-    const res = await friendApi.getFriendDetail(friend.friendId)
+    const res = await friendApi.getFriendDetail(friendId)
+    const detail = res.data?.result || {}
     selectedFriend.value = {
       ...friend,
-      ...res.data?.result,
+      ...detail,
       friendshipId: friend.friendshipId,
-      friendId: friend.friendId,
+      friendId,
+      profileImageUrl: detail.profileImageUrl || friend.profileImageUrl,
     }
   } catch (e) {
     profileError.value = e.response?.data?.message || '친구 프로필을 불러오지 못했습니다.'
@@ -367,20 +375,21 @@ function openSongDetail(song) {
 }
 
 async function goToChat(friend) {
-  if (!friend?.friendId) {
+  const friendId = getFriendUserId(friend)
+  if (!friendId) {
     chatError.value = '친구 정보를 확인할 수 없습니다.'
     return
   }
   chatError.value = ''
-  chatLoadingFriendId.value = friend.friendId
+  chatLoadingFriendId.value = friendId
   try {
-    const detailRes = await friendApi.getFriendDetail(friend.friendId)
+    const detailRes = await friendApi.getFriendDetail(friendId)
     const detail = detailRes.data?.result
 
     if (detail?.roomId) {
       chatStore.setCurrentRoom({
         roomId: detail.roomId,
-        opponentUserId: friend.friendId,
+        opponentUserId: friendId,
         opponentNickname: detail.nickname || friend.nickname,
         opponentProfileImageUrl: detail.profileImageUrl || friend.profileImageUrl,
       })
@@ -388,14 +397,14 @@ async function goToChat(friend) {
       return
     }
 
-    const existingRoom = chatStore.rooms.find((room) => room.opponentUserId === friend.friendId)
+    const existingRoom = chatStore.rooms.find((room) => room.opponentUserId === friendId)
     if (existingRoom?.roomId) {
       chatStore.setCurrentRoom(existingRoom)
       await router.push({ name: 'chat' })
       return
     }
 
-    const room = await chatStore.createRoom(friend.friendId)
+    const room = await chatStore.createRoom(friendId)
     if (room?.roomId) {
       chatStore.setCurrentRoom(room)
       await router.push({ name: 'chat' })
@@ -451,6 +460,24 @@ function getRequestByNotification(notif) {
 
 function getFriendByNotification(notif) {
   return friendStore.friends.find((friend) => isSameId(friend.friendId, notif.senderId))
+}
+
+function getFriendUserId(friend) {
+  return friend?.friendId ?? friend?.userId ?? friend?.targetUserId ?? friend?.receiverId
+}
+
+function getFavoriteSongs(friend) {
+  return friend?.favoriteMusicList
+    || friend?.favoriteSongs
+    || friend?.favoriteMusics
+    || friend?.topSongs
+    || []
+}
+
+function resolveImageUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url
+  return `${apiBaseUrl}${url.startsWith('/') ? url : `/${url}`}`
 }
 
 function isSameId(a, b) {
