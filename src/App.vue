@@ -8,9 +8,8 @@ import { computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import LayoutDefault from './components/layout/LayoutDefault.vue'
 import LayoutAuth from './components/layout/LayoutAuth.vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/authStore'
 import { useFriendStore } from '@/stores/friendStore'
-import { useWebSocket } from '@/composables/useWebSocket'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -48,10 +47,8 @@ watch(
   () => authStore.isLoggedIn,
   (loggedIn) => {
     if (loggedIn) {
-      connect()
       startNotificationPolling()
     } else {
-      disconnect()
       stopNotificationPolling()
     }
   },
@@ -60,8 +57,6 @@ watch(
 // 앱 시작 시 이미 토큰이 있으면 내 정보 로드 + WebSocket 연결
 onMounted(async () => {
   if (authStore.isLoggedIn) {
-    await authStore.fetchMe()
-    connect()
     startNotificationPolling()
   }
 })

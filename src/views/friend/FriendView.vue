@@ -245,10 +245,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useFriendStore } from '@/stores/friendStore'
-import { useChatStore } from '@/stores/chat'
+import { useChatStore } from '@/stores/chatStore'
 import { useRouter } from 'vue-router'
 import { friendApi } from '@/api/friend'
-import { formatRelative } from '@/utils/format'
 
 const friendStore = useFriendStore()
 const chatStore = useChatStore()
@@ -456,6 +455,30 @@ function getFriendByNotification(notif) {
 
 function isSameId(a, b) {
   return a != null && b != null && String(a) === String(b)
+}
+
+function formatRelative(dateStr) {
+  if (!dateStr) return ''
+
+  const date = new Date(dateStr)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const now = new Date()
+  const diffMs = now - date
+  const diffMinutes = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffMinutes < 1) return '방금 전'
+  if (diffMinutes < 60) return `${diffMinutes}분 전`
+  if (diffHours < 24) return `${diffHours}시간 전`
+  if (diffDays < 7) return `${diffDays}일 전`
+
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
 }
 
 function getNotificationSenderNickname(notif) {
