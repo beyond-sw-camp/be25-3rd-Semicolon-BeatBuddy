@@ -49,6 +49,18 @@ const router = createRouter({
         meta: { layout: 'default', title: '음악' }
         },
         {
+        path: '/music/select',
+        name: 'musicSelect',
+        component: () => import('../views/music/MusicSelectView.vue'),
+        meta: { layout: 'default', title: '음악 선택' }
+        },
+        {
+        path: '/music/search',
+        name: 'musicSearch',
+        component: () => import('../views/music/MusicSearchView.vue'),
+        meta: { layout: 'default', title: '곡 검색', showBack: true }
+        },
+        {
         path: '/mypage',
         name: 'mypage',
         component: () => import('../views/mypage/MypageView.vue'),
