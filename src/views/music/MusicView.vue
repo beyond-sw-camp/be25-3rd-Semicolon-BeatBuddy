@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getTaste } from '@/api/music'
 import { useMusicStore } from '@/stores/music'
@@ -119,6 +119,27 @@ const selectedTrack = ref(null)
 // 사용자 정보 상태값
 const nickname = ref('')
 const profileImageUrl = ref('')
+
+onMounted(async () => {
+    const header = document.querySelector('.header')
+    const mainContent = document.querySelector('.main-content')
+
+    if (header) header.style.display = 'none'
+    if (mainContent) mainContent.style.paddingTop = '0'
+
+    await Promise.all([
+        fetchTaste(),
+        fetchUserProfile()
+    ])
+})
+
+onUnmounted(() => {
+    const header = document.querySelector('.header')
+    const mainContent = document.querySelector('.main-content')
+
+    if (header) header.style.display = ''
+    if (mainContent) mainContent.style.paddingTop = '64px'
+})
 
 // 배경 이미지 계산
 const heroBackground = computed(() => {
@@ -216,7 +237,11 @@ onMounted(async () => {
 
 <style scoped>
 .music-view {
-    height: calc(100dvh - 128px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 64px;
     background: #f7f7fb;
     overflow: hidden;
 }

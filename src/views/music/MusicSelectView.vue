@@ -260,7 +260,7 @@ const handleSave = async () => {
     border-radius: 999px;
     background-color: #e8f7ec;
     color: #16a34a;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
 }
 
