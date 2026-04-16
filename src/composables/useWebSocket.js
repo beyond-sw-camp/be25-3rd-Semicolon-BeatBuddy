@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { Client } from '@stomp/stompjs'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
-import { useFriendStore } from '@/stores/friend'
+import { useFriendStore } from '@/stores/friendStore'
 
 const client = ref(null)
 const isConnected = ref(false)

@@ -244,7 +244,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useFriendStore } from '@/stores/friend'
+import { useFriendStore } from '@/stores/friendStore'
 import { useChatStore } from '@/stores/chat'
 import { useRouter } from 'vue-router'
 import { friendApi } from '@/api/friend'

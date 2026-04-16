@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router'
 import LayoutDefault from './components/layout/LayoutDefault.vue'
 import LayoutAuth from './components/layout/LayoutAuth.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useFriendStore } from '@/stores/friend'
+import { useFriendStore } from '@/stores/friendStore'
 import { useWebSocket } from '@/composables/useWebSocket'
 
 const route = useRoute()
