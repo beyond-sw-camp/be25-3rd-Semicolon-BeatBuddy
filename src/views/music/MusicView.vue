@@ -229,52 +229,54 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 32px 24px;
+    padding: 28px 24px;
     box-sizing: border-box;
 }
 
 .loading-text {
-    font-size: 16px;
+    font-size: 15px;
     color: #6b7280;
 }
 
 .icon-circle {
-    width: 152px;
-    height: 152px;
+    width: 132px;
+    height: 132px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 72px;
+    font-size: 60px;
     color: white;
     background: linear-gradient(180deg, #6c63ff 0%, #7c3aed 100%);
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .title {
-    margin: 0 0 20px;
-    font-size: 30px;
+    margin: 0 0 22px;
+    font-size: 25px;
     font-weight: 800;
     color: #111827;
+    line-height: 1.3;
 }
 
 .description {
-    margin: 0 0 28px;
-    font-size: 18px;
-    line-height: 1.8;
+    margin: 0 0 25px;
+    font-size: 15px;
+    line-height: 1.9;
     color: #6b7280;
 }
 
 .select-button {
-    width: 240px;
-    height: 54px;
+    width: 270px;
+    height: 50px;
     font-weight: 700;
-    margin-bottom: 24px;
+    font-size: 16px;
+    margin-bottom: 18px;
 }
 
 .guide-text {
     margin: 0;
-    font-size: 15px;
+    font-size: 14px;
     color: #6c63ff;
 }
 
