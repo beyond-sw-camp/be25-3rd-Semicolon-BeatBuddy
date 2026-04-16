@@ -53,7 +53,7 @@
                             <div class="card-avatar">
                                 <img
                                     v-if="currentRecommendation.profileImageUrl"
-                                    :src="`${apiBaseUrl}${currentRecommendation.profileImageUrl}`"
+                                    :src="resolveImageUrl(currentRecommendation.profileImageUrl)"
                                     class="avatar-img"
                                 />
                                 <span v-else class="mdi mdi-account avatar-icon" />
@@ -155,7 +155,7 @@ import { useFriendStore } from '@/stores/friendStore'
 const router = useRouter()
 const groupStore = useGroupStore()
 const friendStore = useFriendStore()
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 // 기본 상태
 const loading = ref(false)
@@ -191,7 +191,17 @@ const currentRecommendation = computed(
 
 // 유틸 함수
 function getFavoriteSongs(member) {
-    return member?.favoriteMusicList || member?.favoriteSongs || []
+    return member?.favoriteMusicList
+        || member?.favoriteSongs
+        || member?.favoriteMusics
+        || member?.topSongs
+        || []
+}
+
+function resolveImageUrl(url) {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url
+    return `${apiBaseUrl}${url.startsWith('/') ? url : `/${url}`}`
 }
 
 function hasCompleteFavoriteSongs(member) {

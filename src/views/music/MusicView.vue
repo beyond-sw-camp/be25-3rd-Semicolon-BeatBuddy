@@ -115,6 +115,7 @@ const loading = ref(true)
 const hasTaste = ref(false)
 const tasteTracks = ref([])
 const selectedTrack = ref(null)
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 // 사용자 정보 상태값
 const nickname = ref('')
@@ -123,8 +124,8 @@ const profileImageUrl = ref('')
 // 배경 이미지 계산
 const heroBackground = computed(() => {
     const image = profileImageUrl.value
-        ? `http://localhost:8088${profileImageUrl.value}`
-        : 'http://localhost:8088/default-profile.jpg'
+        ? resolveImageUrl(profileImageUrl.value)
+        : resolveImageUrl('/default-profile.jpg')
 
     return `
         linear-gradient(rgba(32, 16, 64, 0.72), rgba(18, 7, 38, 0.88)),
@@ -161,6 +162,12 @@ const openTrackModal = (track) => {
 
 const closeTrackModal = () => {
     selectedTrack.value = null
+}
+
+function resolveImageUrl(url) {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url
+    return `${apiBaseUrl}${url.startsWith('/') ? url : `/${url}`}`
 }
 
 // 사용자 정보 조회
