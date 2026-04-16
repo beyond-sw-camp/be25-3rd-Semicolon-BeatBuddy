@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getTaste } from '@/api/music'
 import { useMusicStore } from '@/stores/music'
@@ -120,26 +120,43 @@ const selectedTrack = ref(null)
 const nickname = ref('')
 const profileImageUrl = ref('')
 
-onMounted(async () => {
+// onMounted(async () => {
+//     const header = document.querySelector('.header')
+//     const mainContent = document.querySelector('.main-content')
+// 
+//     if (header) header.style.display = 'none'
+//     if (mainContent) mainContent.style.paddingTop = '0'
+// 
+//     await Promise.all([
+//         fetchTaste(),
+//         fetchUserProfile()
+//     ])
+// })
+
+const updateHeaderVisibility = (hide) => {
     const header = document.querySelector('.header')
     const mainContent = document.querySelector('.main-content')
 
-    if (header) header.style.display = 'none'
-    if (mainContent) mainContent.style.paddingTop = '0'
+    if (header) {
+        header.style.display = hide ? 'none' : ''
+    }
 
-    await Promise.all([
-        fetchTaste(),
-        fetchUserProfile()
-    ])
+    if (mainContent) {
+        mainContent.style.paddingTop = hide ? '0' : '64px'
+    }
+}
+
+watch(hasTaste, (value) => {
+    updateHeaderVisibility(value)
 })
 
-onUnmounted(() => {
-    const header = document.querySelector('.header')
-    const mainContent = document.querySelector('.main-content')
-
-    if (header) header.style.display = ''
-    if (mainContent) mainContent.style.paddingTop = '64px'
-})
+// onUnmounted(() => {
+//     const header = document.querySelector('.header')
+//     const mainContent = document.querySelector('.main-content')
+// 
+//     if (header) header.style.display = ''
+//     if (mainContent) mainContent.style.paddingTop = '64px'
+// })
 
 // 배경 이미지 계산
 const heroBackground = computed(() => {
@@ -226,12 +243,17 @@ const fetchTaste = async () => {
     }
 }
 
-// 취향 곡 목록 조회 + 사용자 정보 조회 동시 실행
 onMounted(async () => {
     await Promise.all([
         fetchTaste(),
         fetchUserProfile()
     ])
+
+    updateHeaderVisibility(hasTaste.value)
+})
+
+onUnmounted(() => {
+    updateHeaderVisibility(false)
 })
 </script>
 
