@@ -18,7 +18,7 @@ const route = useRoute()
 
 <style scoped>
 .app-container {
-  width: 100%;
+    width: 100%;
   max-width: 430px;
   height: 100vh;
   height: 100dvh;
@@ -28,6 +28,8 @@ const route = useRoute()
   background: var(--color-background);
   position: relative;
   overflow: hidden;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  
 }
 
 .main-content {
