@@ -1,13 +1,12 @@
 <template>
     <div class="group-page">
         <!-- 툴바 -->
-        <v-toolbar flat color="transparent">
-            <v-toolbar-title class="section-title">내 그룹</v-toolbar-title>
-            <v-spacer />
-            <v-btn variant="text" color="primary" @click="editMode = !editMode">
+        <header class="group-header">
+            <h1>그룹</h1>
+            <button class="text-btn" type="button" :class="{ 'text-btn--active': editMode }" @click="editMode = !editMode">
                 {{ editMode ? '완료' : '편집' }}
-            </v-btn>
-        </v-toolbar>
+            </button>
+        </header>
 
         <!-- 그룹 목록 -->
         <div style="flex: 1; overflow-y: auto; min-height: 0;">
@@ -337,7 +336,7 @@ onMounted(() => {
 
 <style scoped>
 .group-page {
-    padding: 8px 16px;
+    padding: 0;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -345,14 +344,44 @@ onMounted(() => {
     background: #fff;
 }
 
-.section-title {
-    font-size: 16px;
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.group-header h1 {
+    font-size: 20px;
     font-weight: 700;
     color: var(--color-text-primary);
 }
 
+.text-btn {
+    min-width: 52px;
+    height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.text-btn--active {
+    background: rgba(108, 99, 255, 0.12);
+    color: var(--color-primary);
+}
+
 .bottom-buttons {
     margin-top: 8px;
+    padding: 0 16px 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;

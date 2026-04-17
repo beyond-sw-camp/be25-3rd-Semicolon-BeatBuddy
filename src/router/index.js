@@ -10,7 +10,7 @@ const router = createRouter({
         path: '/',
         name: 'group',
         component: () => import('../views/group/GroupView.vue'),
-        meta: { layout: 'default', title: '그룹' }
+        meta: { layout: 'default', title: '그룹', hideHeader: true }
         },
         {
         path: '/group/create',
