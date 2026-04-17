@@ -278,6 +278,7 @@ onUnmounted(() => {
     flex-direction: column;
     background: #f7f7fb;
     overflow: hidden;
+    position: relative;
 }
 
 .loading-section,
@@ -457,7 +458,7 @@ onUnmounted(() => {
 }
 
 .modal-backdrop {
-    position: fixed;
+    position: absolute;
     inset: 0;
     background: rgba(10, 10, 20, 0.72);
     display: flex;

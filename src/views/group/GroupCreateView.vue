@@ -27,7 +27,7 @@
                     ref="groupNameField"
                     v-model="form.groupName"
                     label="그룹명 *"
-                    placeholder="  중복되지 않는 그룹 명칭 (최대 20자)"
+                    placeholder="중복되지 않는 그룹 명칭 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
@@ -35,31 +35,34 @@
                     persistent-placeholder
                     :rules="groupNameRules"
                     @blur="checkGroupNameDuplicate"
+                    class="custom-field"
                 />
             </div>
             <div style="margin-bottom: 20px">
                 <v-text-field
                     v-model="form.groupNickname"
                     label="닉네임 *"
-                    placeholder="  그룹 내에서 사용할 닉네임 (최대 20자)"
+                    placeholder="그룹 내에서 사용할 닉네임 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
                     density="comfortable"
                     persistent-placeholder
                     :rules="nicknameRules"
+                    class="custom-field"
                 />
             </div>
             <div style="margin-bottom: 20px">
                 <v-text-field
                     v-model="form.description"
                     label="한 줄 소개"
-                    placeholder="  그룹 메인에 노출될 소개글 (최대 50자)"
+                    placeholder="그룹 메인에 노출될 소개글 (최대 50자)"
                     maxlength="50"
                     counter
                     variant="outlined"
                     density="comfortable"
                     persistent-placeholder
+                    class="custom-field"
                 />
             </div>
             <div style="margin-bottom: 25px">
@@ -67,7 +70,7 @@
                     ref="inviteCodeField"
                     v-model="form.inviteCode"
                     label="초대 코드 *"
-                    placeholder="  그룹 초대 코드 (최대 20자)"
+                    placeholder="그룹 초대 코드 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
@@ -75,6 +78,7 @@
                     persistent-placeholder
                     :rules="inviteCodeRules"
                     @blur="checkInviteCodeDuplicate"
+                    class="custom-field"
                 />
             </div>
             <v-btn
@@ -313,7 +317,9 @@ const goHome = () => {
 .create-page {
     padding: 24px 16px;
     background: #fff;
-    min-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .image-upload {
@@ -329,6 +335,10 @@ const goHome = () => {
     bottom: 28px;
     right: calc(50% - 58px);
     cursor: pointer;
+}
+
+.custom-field :deep(input) {
+    padding-left: 12px !important;
 }
 
 .image-hint {

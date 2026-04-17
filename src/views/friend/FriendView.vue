@@ -250,6 +250,10 @@ function getSenderNameFromMessage(message) {
   width: 100%;
 }
 
+.search-input :deep(.v-field__prepend-inner) {
+  padding-left: 8px;
+}
+
 /* 벨 아이콘 - 헤더 우측 고정 */
 .bell-btn {
   position: fixed;

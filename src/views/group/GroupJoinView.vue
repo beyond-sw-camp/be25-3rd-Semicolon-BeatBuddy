@@ -13,6 +13,7 @@
                         persistent-placeholder
                         :rules="inviteCodeRules"
                         @blur="fetchGroupByCode"
+                        class="custom-field"
                     />
                 </div>
                 <div style="margin-bottom: 20px">
@@ -26,6 +27,7 @@
                         persistent-placeholder
                         :rules="nicknameRules"
                         @blur="checkNicknameDuplicate"
+                        class="custom-field"
                     />
                 </div>
                 <v-btn
@@ -258,5 +260,9 @@ const goHome = () => {
     font-size: 13px;
     color: var(--color-text-secondary);
     line-height: 1.6;
+}
+
+.custom-field :deep(input) {
+    padding-left: 12px !important;
 }
 </style>

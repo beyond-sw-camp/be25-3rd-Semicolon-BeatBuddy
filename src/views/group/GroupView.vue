@@ -10,20 +10,22 @@
         </v-toolbar>
 
         <!-- 그룹 목록 -->
-        <GroupList
-            :groups="groups"
-            :loading="loading"
-            :edit-mode="editMode"
-            @leave="handleLeaveGroup"
-            @select="handleSelectGroup"
-        />
+        <div style="flex: 1; overflow-y: auto; min-height: 0;">
+            <GroupList
+                :groups="groups"
+                :loading="loading"
+                :edit-mode="editMode"
+                @leave="handleLeaveGroup"
+                @select="handleSelectGroup"
+            />
+        </div>
 
         <!-- 하단 버튼 -->
         <div class="bottom-buttons">
-            <v-btn block color="primary" rounded="lg" height="52" class="mb-4" @click="router.push('/group/create')">
+            <v-btn block color="primary" rounded="lg" height="44" class="mb-4" @click="router.push('/group/create')">
                 + 새 그룹 만들기
             </v-btn>
-            <v-btn block variant="outlined" color="primary" rounded="lg" height="52" class="mt-2" @click="router.push('/group/join')">
+            <v-btn block variant="outlined" color="primary" rounded="lg" height="44" class="mt-2" @click="router.push('/group/join')">
                 초대 코드로 가입하기
             </v-btn>
         </div>
@@ -31,7 +33,10 @@
         <!-- 추천 친구 다이얼로그 -->
         <v-dialog
             v-model="showRecommendDialog"
+            max-width="390"
+            max-height="80vh"
             fullscreen
+            contained
             transition="dialog-bottom-transition"
             @update:model-value="handleRecommendDialogUpdate"
         >
@@ -333,6 +338,11 @@ onMounted(() => {
 <style scoped>
 .group-page {
     padding: 8px 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
 }
 
 .section-title {
@@ -404,7 +414,7 @@ onMounted(() => {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 360px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 0 18px 34px;
 }
@@ -425,8 +435,8 @@ onMounted(() => {
 .album-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    max-width: 260px;
+    gap: 10px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -530,7 +540,8 @@ onMounted(() => {
 }
 
 .skip-btn {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 160px;
 }
 
 /* 공통 */
@@ -571,7 +582,7 @@ onMounted(() => {
 .recommend-fullscreen-card {
     position: relative;
     height: 100vh;
-    background: #111;
+    background: #fff;
     border-radius: 0;
     overflow: hidden;
 }

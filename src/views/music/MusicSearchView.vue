@@ -2,6 +2,9 @@
     <div class="music-search-view">
         <div class="top-fixed">
 
+            <div v-if="musicStore.isComplete" class="complete-banner">
+                ✓ 10곡 선택이 완료되었습니다.
+            </div>
             <div class="search-box">
                 <v-icon class="search-icon">mdi-magnify</v-icon>
                 <input 
@@ -54,7 +57,7 @@
 
                     <!-- 이미 선택된 곡 문구 표시 -->
                     <div v-if="musicStore.isAlreadySelected(track.trackId)" class="added-text">
-                        이미 추가됨
+                        추가됨
                     </div>
 
                     <!-- 선택 안된 곡 버튼 표시 -->
@@ -130,11 +133,7 @@ const handleSearch = async () => {
 }
 
 const selectTrack = (track) => {
-    const added = musicStore.addTrack(track)
-
-    if (added) {
-        router.push('/music/select')
-    }
+    musicStore.addTrack(track)
 }
 </script>
 
@@ -189,6 +188,17 @@ const selectTrack = (track) => {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
     background-color: #ffffff;
+}
+
+.complete-banner {
+    margin: 0 24px 12px;
+    padding: 10px 16px;
+    background-color: #e8f7ec;
+    color: #16a34a;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
 }
 
 .content-section {

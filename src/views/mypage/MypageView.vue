@@ -1,4 +1,5 @@
 ﻿<template>
+  <section class="mypage-wrapper">
   <section class="mypage">
     <v-alert
       v-if="userStore.errorMessage"
@@ -426,6 +427,7 @@
       </v-card>
     </v-dialog>
   </section>
+  </section>
 </template>
 
 <script setup>
@@ -703,6 +705,7 @@ const handleChangePassword = async () => {
     passwordStatusMessage.value = userStore.errorMessage || '비밀번호 변경에 실패했습니다.'
     passwordStatusType.value = 'error'
     successMessage.value = ''
+    userStore.errorMessage = ''
     // userStore.errorMessage is rendered in the alert above.
   } finally {
     savingPassword.value = false
@@ -757,6 +760,12 @@ onMounted(loadMypage)
 </script>
 
 <style scoped>
+.mypage-wrapper {
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
 .mypage {
   display: flex;
   flex-direction: column;
