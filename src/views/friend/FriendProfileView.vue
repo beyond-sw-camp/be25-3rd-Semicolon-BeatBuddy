@@ -189,18 +189,21 @@ async function goToChat() {
     const detail = detailRes.data?.result
 
     if (detail?.roomId) {
+      seedChatRoom(detail.roomId)
       await router.push({ name: 'chat-room', params: { roomId: detail.roomId } })
       return
     }
 
     const existingRoom = chatStore.rooms.find((room) => Number(room.opponentUserId) === Number(friendId.value))
     if (existingRoom?.roomId) {
+      seedChatRoom(existingRoom.roomId)
       await router.push({ name: 'chat-room', params: { roomId: existingRoom.roomId } })
       return
     }
 
     const room = await chatStore.createRoom(friendId.value)
     if (room?.roomId) {
+      seedChatRoom(room.roomId)
       await router.push({ name: 'chat-room', params: { roomId: room.roomId } })
     } else {
       chatError.value = '채팅방 정보를 찾을 수 없습니다.'
@@ -213,6 +216,31 @@ async function goToChat() {
   } finally {
     chatLoading.value = false
   }
+}
+
+function seedChatRoom(roomId) {
+  const targetRoomId = Number(roomId)
+  const index = chatStore.rooms.findIndex((room) => Number(room.roomId) === targetRoomId)
+  const friend = selectedFriend.value || {}
+  const fallbackRoom = {
+    roomId: targetRoomId,
+    opponentUserId: friendId.value,
+    opponentNickname: friend.nickname,
+    opponentProfileImageUrl: friend.profileImageUrl,
+  }
+
+  if (index >= 0) {
+    chatStore.rooms[index] = {
+      ...fallbackRoom,
+      ...chatStore.rooms[index],
+      roomId: targetRoomId,
+      opponentNickname: chatStore.rooms[index].opponentNickname || fallbackRoom.opponentNickname,
+      opponentProfileImageUrl: chatStore.rooms[index].opponentProfileImageUrl || fallbackRoom.opponentProfileImageUrl,
+    }
+    return
+  }
+
+  chatStore.rooms.push(fallbackRoom)
 }
 
 async function deleteFriend() {
