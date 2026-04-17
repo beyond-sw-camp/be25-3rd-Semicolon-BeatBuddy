@@ -305,6 +305,8 @@ const birthYearRules = [
 async function handleSendCode() {
   isLoading.value = true
   codeErrorMessage.value = ''
+  verifyBlocked.value = false
+  code.value = ''
   try {
     const response = await sendVerificationCode(email.value)
     const result = response.data.result

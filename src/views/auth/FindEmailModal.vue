@@ -3,7 +3,7 @@
     <v-card rounded="lg" class="modal-card">
 
       <div class="modal-content">
-        <h2 class="title">아이디 찾기</h2>
+        <h2 class="title">이메일 찾기</h2>
         <p class="subtitle">가입 시 등록한 이메일을 입력하시면<br>가입 여부를 확인할 수 있습니다.</p>
 
         <!-- 입력 전 -->
