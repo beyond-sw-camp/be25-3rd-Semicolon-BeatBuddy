@@ -33,14 +33,19 @@
           <div class="notif-actions">
             <v-btn
               color="primary"
-              size="x-small"
+              variant="flat"
+              size="small"
+              prepend-icon="mdi-check"
+              class="action-btn accept-btn"
               :loading="notifLoading === notif.notificationId"
               @click="acceptNotif(notif)"
             >수락</v-btn>
             <v-btn
               color="grey"
-              variant="tonal"
-              size="x-small"
+              variant="outlined"
+              size="small"
+              prepend-icon="mdi-close"
+              class="action-btn reject-btn"
               :disabled="notifLoading === notif.notificationId"
               @click="rejectNotif(notif)"
             >거절</v-btn>
@@ -247,6 +252,19 @@ async function deleteNotif(notifId) {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.action-btn {
+  min-width: 60px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  letter-spacing: 0;
+}
+
+.reject-btn {
+  border-color: #bbb !important;
+  color: #777 !important;
 }
 
 .notif-item {

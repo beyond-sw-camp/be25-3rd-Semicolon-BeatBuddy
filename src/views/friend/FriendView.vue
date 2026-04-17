@@ -321,7 +321,7 @@ function getSenderNameFromMessage(message) {
 }
 
 .friend-item:hover {
-  background: #f5f0ff;
+  background: #f7f6ff;
 }
 
 .friend-avatar {
