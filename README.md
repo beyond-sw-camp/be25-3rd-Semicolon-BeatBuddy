@@ -79,18 +79,7 @@
 
 ## 🔧 시스템 아키텍처
 
-```
-[Vue.js Frontend]
-       ↕ HTTP / WebSocket
-[Spring Boot Backend]
-       ↕ MyBatis
-[MariaDB Database]
-       
-[외부 API]
-- Spotify API : 곡 검색, 앨범 커버
-- SoundNet API : 음악 특성 데이터
-- Gmail SMTP : 이메일 인증
-```
+> <img width="6337" height="3477" alt="Web App Reference Architecture" src="https://github.com/user-attachments/assets/aa12a9b9-0a6d-4915-9db9-c88309f9b282" />
 
 ---
 
@@ -136,7 +125,7 @@
 
 ## 🧪 테스트 계획 및 결과 보고서
 
-  > [테스트 계획 및 결과 보고서](여기에_Google_Sheet_링크_삽입)
+  > [테스트 계획 및 결과 보고서](https://docs.google.com/spreadsheets/d/1_pKygK3_dZ3CGeiM8Y9sOOe0t-kFvco2/edit?gid=424294998#gid=424294998)
 
 ---
 
@@ -147,14 +136,15 @@
 
 | 구분 | 기술 |
 |------|------|
-| Frontend | Vue.js |
-| Backend | Spring Boot |
-| Database | MariaDB |
-| ORM | MyBatis |
-| 인증 | JWT |
-| 이메일 | Gmail SMTP |
-| 실시간 채팅 | WebSocket (STOMP) |
-| 외부 API | Spotify API, SoundNet API |
+| Frontend | ![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) |
+| Backend | ![SpringBoot](https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white) |
+| Database | ![MariaDB](https://img.shields.io/badge/MariaDB(MySQL)-003545?style=for-the-badge&logo=mariadb&logoColor=white) |
+| ORM | ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge) |
+| 인증 | ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) |
+| 이메일 | ![Gmail](https://img.shields.io/badge/GmailSMTP-EA4335?style=for-the-badge&logo=gmail&logoColor=white) |
+| 실시간 채팅 | ![WebSocket](https://img.shields.io/badge/WebSocket(STOMP)-010101?style=for-the-badge) |
+| 외부 API | ![Spotify](https://img.shields.io/badge/SpotifyAPI-1DB954?style=for-the-badge&logo=spotify&logoColor=white)&nbsp;![RapidAPI](https://img.shields.io/badge/RapidAPI-0055DA?style=for-the-badge&logo=rapid&logoColor=white) |
+
 
 
 ---
