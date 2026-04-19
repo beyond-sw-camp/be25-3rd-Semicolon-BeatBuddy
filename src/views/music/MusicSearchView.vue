@@ -153,7 +153,7 @@ const selectTrack = (track) => {
 
 .search-box {
     position: relative;
-    margin: 16px 24px 20px;
+    margin: 10px 24px 20px;
 }
 
 .search-icon {
@@ -191,7 +191,7 @@ const selectTrack = (track) => {
 }
 
 .complete-banner {
-    margin: 0 24px 12px;
+    margin: 11px 24px 12px;
     padding: 10px 16px;
     background-color: #e8f7ec;
     color: #16a34a;
