@@ -10,7 +10,7 @@
       <section class="profile-hero" :style="{ backgroundImage: profileBackgroundImage }">
         <div class="profile-overlay" />
         <div class="profile-content">
-          <h3 class="profile-name">{{ selectedFriend.nickname }}</h3>
+          <h3 class="profile-name">{{ selectedFriend.groupNickname || selectedFriend.nickname }}</h3>
 
           <section class="profile-section">
             <p class="section-label favorite-album-title">FAVORITE ALBUM</p>
@@ -79,7 +79,7 @@
     <v-dialog v-model="showDeleteConfirm" max-width="300">
       <v-card rounded="xl">
         <v-card-title class="dialog-title">친구 삭제</v-card-title>
-        <v-card-text>{{ selectedFriend?.nickname }}님을 친구 목록에서 삭제할까요?</v-card-text>
+        <v-card-text>{{ selectedFriend?.groupNickname || selectedFriend?.nickname }}님을 친구 목록에서 삭제할까요?</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn variant="text" @click="showDeleteConfirm = false">취소</v-btn>
