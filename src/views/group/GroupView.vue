@@ -63,7 +63,7 @@
                         <div class="member-card" :style="{ backgroundImage: recommendationBackgroundImage }">
                             <div class="member-overlay" />
                             <div class="member-content">
-                                <h3 class="member-name">{{ currentRecommendation.nickname }}</h3>
+                                <h3 class="member-name">{{ currentRecommendation.groupNickname || currentRecommendation.nickname }}</h3>
                                 <div class="favorite-preview">
                                     <div class="album-panel">
                                         <div v-if="getFavoriteSongs(currentRecommendation).length" class="album-grid">

@@ -55,7 +55,7 @@
             <span v-else class="mdi mdi-account avatar-icon" />
           </div>
           <div class="friend-info">
-            <p class="friend-name">{{ friend.nickname }}</p>
+            <p class="friend-name">{{ friend.groupNickname || friend.nickname }}</p>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
     <v-dialog v-model="showDeleteConfirm" max-width="300">
       <v-card rounded="xl">
         <v-card-title class="dialog-title">친구 삭제</v-card-title>
-        <v-card-text>{{ deletingFriend?.nickname }}님을 친구 목록에서 삭제할까요?</v-card-text>
+        <v-card-text>{{ deletingFriend?.groupNickname || deletingFriend?.nickname }}님을 친구 목록에서 삭제할까요?</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn variant="text" @click="showDeleteConfirm = false">취소</v-btn>
@@ -127,7 +127,7 @@ const totalNotifCount = computed(() =>
 const filteredFriends = computed(() => {
   const q = search.value.toLowerCase()
   return q
-    ? friendStore.friends.filter((f) => f.nickname.toLowerCase().includes(q))
+    ? friendStore.friends.filter((f) => (f.groupNickname || f.nickname).toLowerCase().includes(q))
     : friendStore.friends
 })
 
