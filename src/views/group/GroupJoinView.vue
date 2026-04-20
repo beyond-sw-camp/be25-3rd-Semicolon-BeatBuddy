@@ -20,7 +20,8 @@
                     <v-text-field
                         ref="nicknameField"
                         v-model="groupNickname"
-                        label="닉네임 *"
+                        label="닉네임"
+                        placeholder="미설정 시, 유저 닉네임을 사용합니다"
                         variant="outlined"
                         bg-color="#f5f5f5"
                         density="comfortable"
@@ -119,12 +120,11 @@ const inviteCodeRules = [
 ]
 
 const nicknameRules = [
-    v => !!v?.trim() || '닉네임을 입력해주세요.',
     () => nicknameError.value ?? true,
 ]
 
 const isFormValid = computed(() =>
-    !!inviteCode.value.trim() && !!groupNickname.value.trim()
+    !!inviteCode.value.trim()
 )
 
 // 초대코드로 그룹 조회 (blur 시점)

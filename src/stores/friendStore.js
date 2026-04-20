@@ -79,8 +79,8 @@ export const useFriendStore = defineStore('friend', () => {
         friends.value = friends.value.filter((f) => f.friendshipId !== friendshipId)
     }
 
-    async function sendRequest(receiverId) {
-        await friendApi.sendRequest(receiverId)
+    async function sendRequest(receiverId, groupId) {
+        await friendApi.sendRequest(receiverId, groupId)
     }
 
     function addNotification(notification) {
@@ -105,7 +105,10 @@ export const useFriendStore = defineStore('friend', () => {
 
     function findRequestForNotification(notif) {
         return receivedRequests.value.find((r) => isSameId(r.friendshipId, notif.targetId))
-            || receivedRequests.value.find((r) => isSameId(r.friendId, notif.senderId))
+            || receivedRequests.value.find((r) =>
+                isSameId(r.friendId, notif.senderId) &&
+                (notif.groupId == null || r.groupId == null || isSameId(r.groupId, notif.groupId))
+            )
     }
 
     function isSameId(a, b) {

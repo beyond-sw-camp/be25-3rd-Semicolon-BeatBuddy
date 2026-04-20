@@ -26,6 +26,7 @@
             <span v-else class="mdi mdi-account avatar-icon" />
           </div>
           <div class="notif-content">
+            <p v-if="getNotificationGroupName(notif)" class="notif-group">{{ getNotificationGroupName(notif) }}</p>
             <p class="notif-sender">{{ getNotificationSenderNickname(notif) }}</p>
             <p class="notif-sub">친구 신청을 보냈어요</p>
             <p class="notif-time">{{ formatRelative(notif.createdAt) }}</p>
@@ -62,6 +63,7 @@
             <span v-else class="mdi mdi-account-check avatar-icon" />
           </div>
           <div class="notif-content">
+            <p v-if="getNotificationGroupName(notif)" class="notif-group">{{ getNotificationGroupName(notif) }}</p>
             <p class="notif-sender">{{ getAcceptedFriendNickname(notif) }}</p>
             <p class="notif-sub">친구 요청을 수락했어요</p>
             <p class="notif-time">{{ formatRelative(notif.createdAt) }}</p>
@@ -106,9 +108,12 @@ const friendRequestNotifications = computed(() => {
     .map((req) => ({
       notificationId: `request-${req.friendshipId}`,
       senderId: req.friendId,
+      groupId: req.groupId,
+      groupName: req.groupName,
+      groupNickname: req.groupNickname,
       targetId: req.friendshipId,
       type: 'FRIEND_REQUEST',
-      message: `${req.nickname}님이 친구 신청을 보냈어요.`,
+      message: `${req.groupNickname || req.nickname}님이 친구 신청을 보냈어요.`,
       isRead: false,
       createdAt: req.createdAt || req.updatedAt,
       isFallbackRequest: true,
@@ -142,7 +147,10 @@ function isFriendAccept(notif) {
 
 function getRequestByNotification(notif) {
   return friendStore.receivedRequests.find((r) => isSameId(r.friendshipId, notif.targetId))
-    || friendStore.receivedRequests.find((r) => isSameId(r.friendId, notif.senderId))
+    || friendStore.receivedRequests.find((r) =>
+      isSameId(r.friendId, notif.senderId) &&
+      (notif.groupId == null || r.groupId == null || isSameId(r.groupId, notif.groupId))
+    )
 }
 
 function getFriendByNotification(notif) {
@@ -184,7 +192,9 @@ function formatRelative(dateStr) {
 }
 
 function getNotificationSenderNickname(notif) {
-  return getRequestByNotification(notif)?.nickname
+  return notif.groupNickname
+    || getRequestByNotification(notif)?.groupNickname
+    || getRequestByNotification(notif)?.nickname
     || notif.senderNickname
     || notif.nickname
     || notif.senderName
@@ -198,7 +208,9 @@ function getNotificationSenderProfileImage(notif) {
 }
 
 function getAcceptedFriendNickname(notif) {
-  return getFriendByNotification(notif)?.nickname
+  return notif.groupNickname
+    || getFriendByNotification(notif)?.groupNickname
+    || getFriendByNotification(notif)?.nickname
     || notif.senderNickname
     || notif.nickname
     || notif.senderName
@@ -215,6 +227,10 @@ function getSenderNameFromMessage(message) {
   if (!message) return '알 수 없음'
   const match = message.match(/^(.+?)님/)
   return match?.[1] || '알 수 없음'
+}
+
+function getNotificationGroupName(notif) {
+  return notif.groupName || getRequestByNotification(notif)?.groupName || ''
 }
 
 async function acceptNotif(notif) {
@@ -321,6 +337,22 @@ async function deleteNotif(notifId) {
   font-size: 12px;
   color: var(--color-text-secondary);
   margin: 2px 0 0;
+}
+
+.notif-group {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 0 2px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f0f0ff;
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .notif-actions {

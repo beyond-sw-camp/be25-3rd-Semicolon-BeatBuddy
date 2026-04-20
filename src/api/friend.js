@@ -9,7 +9,7 @@ export const friendApi = {
     getReceivedRequests: () => api.get('/api/v1/friends/requests/received'),
 
     // 친구 신청 보내기
-    sendRequest: (receiverId) => api.post('/api/v1/friends/requests', { receiverId }),
+    sendRequest: (receiverId, groupId) => api.post('/api/v1/friends/requests', { receiverId, groupId }),
 
     // 친구 신청 수락 (POST)
     acceptRequest: (requestId) => api.post(`/api/v1/friends/requests/${requestId}/accept`),
