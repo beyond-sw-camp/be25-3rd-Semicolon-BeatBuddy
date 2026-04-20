@@ -44,6 +44,11 @@
 
 ## 📑 요구사항 분석
 
+<details>
+<summary> 요구사항 분석 </summary>
+
+<br>
+
 ### 🎵 1. 음악 취향 분석
 - 최애곡 10곡 선택 (Spotify API 연동)
 - 곡별 음악 특성 수집 (SoundNet API)
@@ -76,13 +81,20 @@
 ### 🔔 6. 알림
 - 친구 신청 / 수락 알림
 
+</details>
+
 ---
 
 ## 🔧 시스템 아키텍처
 
-> <img width="6337" height="3477" alt="Web App Reference Architecture" src="https://github.com/user-attachments/assets/aa12a9b9-0a6d-4915-9db9-c88309f9b282" />
+<details>
+<summary> 시스템 아키텍처</summary>
 
----
+<br>
+
+> ![Web App Reference Architecture](https://github.com/user-attachments/assets/4f84192b-62fc-4ae6-897b-765a117cd097)
+
+</details>
 
 ## 🖥 화면 및 기능 설계서
 
@@ -135,6 +147,11 @@
 
 ## 🛠️ 기술 스택
 
+<details>
+> <summary> 기술 스택</summary>
+
+<br>
+
 | 구분 | 기술 |
 |------|------|
 | Frontend | ![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) |
@@ -146,7 +163,7 @@
 | 실시간 채팅 | ![WebSocket](https://img.shields.io/badge/WebSocket(STOMP)-010101?style=for-the-badge) |
 | 외부 API | ![Spotify](https://img.shields.io/badge/SpotifyAPI-1DB954?style=for-the-badge&logo=spotify&logoColor=white)&nbsp;![RapidAPI](https://img.shields.io/badge/RapidAPI-0055DA?style=for-the-badge&logo=rapid&logoColor=white) |
 
-
+</details>
 
 ---
 
