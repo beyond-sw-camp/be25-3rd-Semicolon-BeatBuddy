@@ -113,6 +113,13 @@ const chatLoading = ref(false)
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const friendId = computed(() => Number(route.params.friendId))
+const groupId = computed(() => route.query.groupId ? Number(route.query.groupId) : null)
+const toValidId = (value) => {
+  const id = Number(value)
+  return Number.isFinite(id) ? id : null
+}
+const getFriendGroupId = (friend) =>
+  friend?.groupId
 
 const profileAlbumSlots = computed(() => {
   return getFavoriteSongs(selectedFriend.value).slice(0, 10)
@@ -138,7 +145,7 @@ onMounted(async () => {
       await friendStore.fetchFriends()
     }
 
-    const friend = friendStore.friends.find((item) => Number(item.friendId) === friendId.value) || {}
+    const friend = findFriendByGroup() || friendStore.friends.find((item) => Number(item.friendId) === friendId.value) || {}
     const res = await friendApi.getFriendDetail(friendId.value)
     const detail = res.data?.result || {}
 
@@ -146,6 +153,8 @@ onMounted(async () => {
       ...friend,
       ...detail,
       friendId: friendId.value,
+      groupId: getFriendGroupId(detail) || getFriendGroupId(friend) || groupId.value,
+      groupNickname: detail.groupNickname || friend.groupNickname,
       friendshipId: friend.friendshipId,
       profileImageUrl: detail.profileImageUrl || friend.profileImageUrl,
     }
@@ -194,14 +203,28 @@ async function goToChat() {
       return
     }
 
-    const existingRoom = chatStore.rooms.find((room) => Number(room.opponentUserId) === Number(friendId.value))
+    const selectedGroupId = getSelectedGroupId()
+    const existingRoom = chatStore.rooms.find((room) =>
+      Number(room.opponentUserId) === Number(friendId.value) &&
+      (!selectedGroupId || Number(room.groupId) === Number(selectedGroupId))
+    )
     if (existingRoom?.roomId) {
       seedChatRoom(existingRoom.roomId)
       await router.push({ name: 'chat-room', params: { roomId: existingRoom.roomId } })
       return
     }
 
-    const room = await chatStore.createRoom(friendId.value)
+    if (!selectedGroupId) {
+      console.warn('채팅방 생성 groupId 확인 실패', {
+        routeGroupId: groupId.value,
+        selectedFriend: selectedFriend.value,
+        friends: friendStore.friends,
+      })
+      chatError.value = '채팅방 생성을 위한 그룹 정보를 확인할 수 없습니다.'
+      return
+    }
+
+    const room = await chatStore.createRoom(friendId.value, selectedGroupId)
     if (room?.roomId) {
       seedChatRoom(room.roomId)
       await router.push({ name: 'chat-room', params: { roomId: room.roomId } })
@@ -218,14 +241,29 @@ async function goToChat() {
   }
 }
 
+function findFriendByGroup() {
+  if (!groupId.value) return null
+  return friendStore.friends.find((item) =>
+    Number(item.friendId) === friendId.value && Number(getFriendGroupId(item)) === groupId.value
+  )
+}
+
+function getSelectedGroupId() {
+  return toValidId(getFriendGroupId(selectedFriend.value))
+    || toValidId(groupId.value)
+    || toValidId(getFriendGroupId(friendStore.friends.find((item) => Number(item.friendId) === friendId.value)))
+}
+
 function seedChatRoom(roomId) {
   const targetRoomId = Number(roomId)
   const index = chatStore.rooms.findIndex((room) => Number(room.roomId) === targetRoomId)
   const friend = selectedFriend.value || {}
   const fallbackRoom = {
     roomId: targetRoomId,
+    groupId: getFriendGroupId(friend) || groupId.value,
+    isFallbackRoom: true,
     opponentUserId: friendId.value,
-    opponentNickname: friend.nickname,
+    opponentNickname: friend.groupNickname || friend.nickname,
     opponentProfileImageUrl: friend.profileImageUrl,
   }
 
@@ -234,7 +272,8 @@ function seedChatRoom(roomId) {
       ...fallbackRoom,
       ...chatStore.rooms[index],
       roomId: targetRoomId,
-      opponentNickname: chatStore.rooms[index].opponentNickname || fallbackRoom.opponentNickname,
+      groupId: fallbackRoom.groupId || chatStore.rooms[index].groupId,
+      opponentNickname: fallbackRoom.opponentNickname || chatStore.rooms[index].opponentNickname,
       opponentProfileImageUrl: chatStore.rooms[index].opponentProfileImageUrl || fallbackRoom.opponentProfileImageUrl,
     }
     return

@@ -17,7 +17,6 @@
 
         <div class="room-copy">
           <h1>{{ room?.opponentNickname ?? defaultRoomTitle }}</h1>
-          <p>{{ onlineLabel }}</p>
         </div>
       </div>
     </header>
@@ -95,7 +94,6 @@ const chatStore = useChatStore()
 const authStore = useAuthStore()
 
 const defaultRoomTitle = '\uCC44\uD305\uBC29'
-const onlineLabel = '\uC628\uB77C\uC778'
 const exitedPlaceholder = '\uC0C1\uB300\uBC29\uC774 \uCC44\uD305\uBC29\uC744 \uB098\uAC14\uC2B5\uB2C8\uB2E4'
 const defaultPlaceholder = '\uBA54\uC2DC\uC9C0\uB97C \uC785\uB825\uD558\uC138\uC694...'
 const decodeJwtPayload = (token) => {
@@ -321,12 +319,6 @@ onUnmounted(() => {
   color: var(--color-text-primary);
   font-size: 18px;
   font-weight: 700;
-}
-
-.room-copy p {
-  margin-top: 2px;
-  color: var(--color-text-secondary);
-  font-size: 12px;
 }
 
 .message-list {

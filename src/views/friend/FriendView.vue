@@ -151,7 +151,11 @@ function openNotifications() {
 function openProfile(friend) {
   const friendId = getFriendUserId(friend)
   if (!friendId) return
-  router.push({ name: 'friend-profile', params: { friendId } })
+  router.push({
+    name: 'friend-profile',
+    params: { friendId },
+    query: getFriendGroupId(friend) ? { groupId: getFriendGroupId(friend) } : {},
+  })
 }
 
 function confirmDelete(friend) {
@@ -185,6 +189,10 @@ function getFriendByNotification(notif) {
 
 function getFriendUserId(friend) {
   return friend?.friendId ?? friend?.userId ?? friend?.targetUserId ?? friend?.receiverId
+}
+
+function getFriendGroupId(friend) {
+  return friend?.groupId
 }
 
 function resolveImageUrl(url) {

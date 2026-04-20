@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import api from '@/api/axios'
 import { useAuthStore } from '@/stores/authStore'
+import { useFriendStore } from '@/stores/friendStore'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, '')
 const WS_BASE_URL = (import.meta.env.VITE_WS_BASE_URL ?? API_BASE_URL).replace(/\/$/, '')
@@ -39,6 +40,7 @@ const decodeJwtPayload = (token) => {
 
 export const useChatStore = defineStore('chat', () => {
   const authStore = useAuthStore()
+  const friendStore = useFriendStore()
   const getAccessToken = () => authStore.token
   const getCurrentUserId = () => {
     if (authStore.user?.userId) return Number(authStore.user.userId)
@@ -86,10 +88,62 @@ export const useChatStore = defineStore('chat', () => {
     return refreshAccessToken()
   }
 
+  const getFriendUserId = (friend) =>
+    friend?.friendId ?? friend?.userId ?? friend?.targetUserId ?? friend?.receiverId
+
+  const getFriendGroupId = (friend) =>
+    friend?.groupId
+
+  const findFriendForRoom = (room) =>
+    friendStore.friends.find((friend) =>
+      Number(getFriendUserId(friend)) === Number(room.opponentUserId) &&
+      Number(getFriendGroupId(friend)) === Number(room.groupId)
+    )
+
+  const normalizeRoom = (room) => {
+    const normalized = {
+      ...room,
+      roomId: room?.roomId != null ? Number(room.roomId) : room?.roomId,
+      groupId: room?.groupId != null ? Number(room.groupId) : room?.groupId,
+      opponentUserId: room?.opponentUserId != null ? Number(room.opponentUserId) : room?.opponentUserId,
+    }
+    const friend = findFriendForRoom(normalized)
+
+    return {
+      ...normalized,
+      opponentNickname: friend?.groupNickname || normalized.opponentNickname || friend?.nickname,
+      opponentProfileImageUrl: normalized.opponentProfileImageUrl || friend?.profileImageUrl,
+    }
+  }
+
+  const mergeRoom = (incomingRoom) => {
+    const incoming = normalizeRoom(incomingRoom)
+    const previous = rooms.value.find((room) => Number(room.roomId) === incoming.roomId)
+
+    if (!previous) return { ...incoming, isFallbackRoom: false }
+
+    return {
+      ...previous,
+      ...incoming,
+      isFallbackRoom: false,
+      opponentNickname: incoming.opponentNickname || previous.opponentNickname,
+      opponentProfileImageUrl: incoming.opponentProfileImageUrl || previous.opponentProfileImageUrl,
+    }
+  }
+
   const loadRooms = async () => {
     try {
+      if (!friendStore.friends.length) {
+        await friendStore.fetchFriends().catch(console.error)
+      }
       const { data } = await api.get('/api/v1/chat/rooms')
-      rooms.value = data.result ?? []
+      const nextRooms = (data.result ?? []).map(mergeRoom)
+      const nextRoomIds = new Set(nextRooms.map((room) => Number(room.roomId)))
+      const fallbackRooms = rooms.value.filter(
+        (room) => room.isFallbackRoom && !nextRoomIds.has(Number(room.roomId))
+      )
+
+      rooms.value = [...nextRooms, ...fallbackRooms]
     } catch (error) {
       console.error(error)
       throw buildApiError(error, loadRoomsError)
@@ -168,12 +222,23 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  const createRoom = async (opponentUserId) => {
+  const createRoom = async (opponentUserId, groupId) => {
+    const payload = { opponentUserId }
+    const normalizedGroupId = Number(groupId)
+    if (Number.isFinite(normalizedGroupId)) {
+      payload.groupId = normalizedGroupId
+    }
+
     try {
-      const { data } = await api.post('/api/v1/chat/rooms', { opponentUserId })
+      const { data } = await api.post('/api/v1/chat/rooms', payload)
       await loadRooms()
       return data.result
     } catch (error) {
+      console.error('채팅방 생성 실패', {
+        payload,
+        status: error.response?.status,
+        data: error.response?.data,
+      })
       console.error(error)
       throw buildApiError(error, createRoomError)
     }
