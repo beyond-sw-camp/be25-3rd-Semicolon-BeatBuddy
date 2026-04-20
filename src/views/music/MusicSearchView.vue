@@ -291,6 +291,7 @@ const selectTrack = (track) => {
     margin: 0;
     font-size: 14px;
     color: #6b7280;
+    word-break: break-all;
 }
 
 .album-name {
