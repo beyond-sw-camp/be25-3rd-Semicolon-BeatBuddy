@@ -298,12 +298,13 @@ async function skip(member) {
 // 친구 신청
 async function sendRequest(member) {
     const targetUserId = member?.userId
-    if (!targetUserId) return
+    const groupId = groupStore.currentGroupId
+    if (!targetUserId || !groupId) return
     actionError.value = ''
     actionErrorUserId.value = null
     requestLoadingUserId.value = targetUserId
     try {
-        await friendStore.sendRequest(targetUserId)
+        await friendStore.sendRequest(targetUserId, groupId)
         await groupStore.skipMember(targetUserId)
         recommendationIndex.value = Math.min(
             recommendationIndex.value,

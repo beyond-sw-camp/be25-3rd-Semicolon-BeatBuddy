@@ -41,14 +41,13 @@
             <div style="margin-bottom: 20px">
                 <v-text-field
                     v-model="form.groupNickname"
-                    label="닉네임 *"
-                    placeholder="그룹 내에서 사용할 닉네임 (최대 20자)"
+                    label="닉네임"
+                    placeholder="미설정 시, 유저 닉네임을 사용합니다 (최대 20자)"
                     maxlength="20"
                     counter
                     variant="outlined"
                     density="comfortable"
                     persistent-placeholder
-                    :rules="nicknameRules"
                     class="custom-field"
                 />
             </div>
@@ -199,17 +198,11 @@ const form = ref({
 })
 
 const groupNameError = ref(null)
-const nicknameError = ref(null)
 const inviteCodeError = ref(null)
 
 const groupNameRules = [
     v => !!v?.trim() || '그룹명을 입력해주세요.',
     () => groupNameError.value ?? true,
-]
-
-const nicknameRules = [
-    v => !!v?.trim() || '닉네임을 입력해주세요.',
-    () => nicknameError.value ?? true,
 ]
 
 const inviteCodeRules = [
@@ -221,7 +214,6 @@ const inviteCodeRules = [
 const isFormValid = computed(() => {
     return (
         !!form.value.groupName.trim() &&
-        !!form.value.groupNickname.trim() &&
         !!form.value.inviteCode.trim()
     )
 })
@@ -294,8 +286,6 @@ const handleCreate = async () => {
         if (status === 400) {
             if (msg.includes('그룹명')) {
                 groupNameError.value = msg
-            } else if (msg.includes('닉네임')) {
-                nicknameError.value = msg
             } else if (msg.includes('초대')) {
                 inviteCodeError.value = msg
             }
