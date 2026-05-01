@@ -66,7 +66,7 @@
           type="text"
           :placeholder="composerPlaceholder"
           :disabled="chatStore.isOpponentExited"
-          @keydown.enter="sendMessage"
+          @keydown.enter.exact.prevent="sendMessage"
         />
         <button
           type="button"
@@ -122,6 +122,7 @@ const room = computed(() => chatStore.rooms.find((item) => item.roomId === roomI
 
 const draft = ref('')
 const messageListEl = ref(null)
+const isSending = ref(false)
 
 const normalizedMessages = computed(() =>
   [...chatStore.messages].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
@@ -183,13 +184,18 @@ const shouldShowDateChip = (index) => {
 }
 
 const sendMessage = async () => {
-  if (!draft.value.trim()) return
+  if (isSending.value || !draft.value.trim()) return
+  isSending.value = true
 
-  const sent = chatStore.sendMessage(roomId.value, draft.value)
-  if (!sent) return
+  try {
+    const sent = chatStore.sendMessage(roomId.value, draft.value)
+    if (!sent) return
 
-  draft.value = ''
-  await scrollToBottom()
+    draft.value = ''
+    await scrollToBottom()
+  } finally {
+    isSending.value = false
+  }
 }
 
 const scrollToBottom = async () => {
@@ -214,7 +220,8 @@ watch(
     if (!connected) return
     chatStore.subscribeRoom(roomId.value)
     markRoomAsRead()
-  }
+  },
+  { immediate: true }
 )
 
 onMounted(async () => {

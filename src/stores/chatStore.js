@@ -51,6 +51,7 @@ export const useChatStore = defineStore('chat', () => {
 
   let stompClient = null
   let roomSubscription = null
+  let subscribedRoomId = null
   let eventSubscription = null
   let isConnecting = false
 
@@ -150,10 +151,41 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  const getMessageKey = (message) => {
+    if (message?.messageId != null) return `id:${message.messageId}`
+
+    return [
+      message?.roomId,
+      message?.senderId,
+      message?.createdAt,
+      message?.messageText,
+    ].join('|')
+  }
+
+  const dedupeMessages = (nextMessages) => {
+    const seen = new Set()
+
+    return nextMessages.filter((message) => {
+      const key = getMessageKey(message)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }
+
+  const appendMessage = (message) => {
+    const incomingKey = getMessageKey(message)
+    const alreadyExists = messages.value.some((item) => getMessageKey(item) === incomingKey)
+
+    if (!alreadyExists) {
+      messages.value.push(message)
+    }
+  }
+
   const loadMessages = async (roomId) => {
     try {
       const { data } = await api.get(`/api/v1/chat/${roomId}/messages`)
-      messages.value = data.result?.messages ?? []
+      messages.value = dedupeMessages(data.result?.messages ?? [])
       isOpponentExited.value = data.result?.opponentExited ?? false
     } catch (error) {
       console.error(error)
@@ -163,14 +195,16 @@ export const useChatStore = defineStore('chat', () => {
 
   const subscribeRoom = (roomId) => {
     if (!stompClient?.connected) return
+    if (roomSubscription && Number(subscribedRoomId) === Number(roomId)) return
 
     if (roomSubscription) {
       roomSubscription.unsubscribe()
     }
 
+    subscribedRoomId = roomId
     roomSubscription = stompClient.subscribe(`/sub/chat/rooms/${roomId}`, (frame) => {
       const msg = JSON.parse(frame.body)
-      messages.value.push(msg)
+      appendMessage(msg)
 
       if (Number(msg.senderId) !== getCurrentUserId()) {
         stompClient.publish({
@@ -187,6 +221,7 @@ export const useChatStore = defineStore('chat', () => {
       roomSubscription = null
     }
 
+    subscribedRoomId = null
     messages.value = []
     isOpponentExited.value = false
   }
